@@ -11,10 +11,12 @@ composeBom = "2024.04.01"
 #navigation
 navVersion = "2.8.5"
 jsonSerializationVersion = "1.7.3"
+#----
 #hilt
 kspVersion = "2.0.0-1.0.24"
 hiltVersion = "2.51.1"
 hiltNavigationComposeVersion = "1.2.0"
+#----
 
 [libraries]
 #default generated
@@ -44,6 +46,8 @@ kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion"}
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion"}
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion"}
+hilt-android-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "hiltVersion"}
+#----
 
 [plugins]
 #default generated
@@ -53,6 +57,8 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 #----
 #navigation
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
+#----
 #hilt
 kotlinAndroidKsp = { id = "com.google.devtools.ksp", version.ref = "kspVersion"}
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion"}
+#----
