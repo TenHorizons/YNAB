@@ -16,6 +16,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ynab.ui.theme.YNABTheme
 import com.ynab.ui.login.Login
+import com.ynab.ui.register.Register
 import dagger.hilt.android.AndroidEntryPoint
 
 private const val TAG = "MainActivity"
@@ -43,8 +44,15 @@ fun Main(modifier: Modifier = Modifier) {
         composable<Login> {
             Login(
                 modifier = modifier,
-                onRegisterClick = { Log.d(TAG, "Nav to register success")/*navController.navigate(route = Register)*/ },
+                onRegisterClick = { navController.navigate(route = Register) },
                 onLoginSuccess = { Log.d(TAG, "Login Success") }
+            )
+        }
+        composable<Register> {
+            Register(
+                modifier = modifier,
+                onLoginClick = { navController.navigate(route = Login) },
+                onRegisterSuccess = { Log.d(TAG, "Register Success") }
             )
         }
     }
