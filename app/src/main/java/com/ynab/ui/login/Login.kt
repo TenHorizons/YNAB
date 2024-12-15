@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.ui.shared.PasswordField
 import com.ynab.ui.shared.UsernameField
@@ -26,7 +27,7 @@ import com.ynab.ui.shared.UsernameField
 @Composable
 fun Login(
     modifier: Modifier = Modifier,
-    vm: LoginViewModel = LoginViewModel,
+    vm: LoginViewModel = hiltViewModel(),
     onRegisterClick: () -> Unit = {},
     onLoginSuccess: () -> Unit = {}
 ) {

@@ -1,6 +1,8 @@
 package com.ynab.domain
 
-class BasicAuthUseCaseImpl (
+import javax.inject.Inject
+
+class BasicAuthUseCaseImpl @Inject constructor(
 //    private val userRepository: UserRepository
 ): BasicAuthUseCase {
 

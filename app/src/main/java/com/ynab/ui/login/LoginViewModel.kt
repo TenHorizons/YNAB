@@ -2,7 +2,8 @@ package com.ynab.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ynab.domain.BasicAuthUseCaseImpl
+import com.ynab.domain.BasicAuthUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,12 +11,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-//class LoginViewModel (
-//    private val basicAuthUseCase: BasicAuthUseCase
-//): ViewModel() {
-object LoginViewModel: ViewModel() {
-    private val basicAuthUseCase = BasicAuthUseCaseImpl()
+@HiltViewModel
+class LoginViewModel @Inject constructor(
+    private val basicAuthUseCase: BasicAuthUseCase
+): ViewModel() {
+//object LoginViewModel: ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginState())
     val uiState: StateFlow<LoginState> = _uiState.asStateFlow()

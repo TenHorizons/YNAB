@@ -4,6 +4,9 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     //navigation
     alias(libs.plugins.kotlin.serialization)
+    //hilt
+    alias(libs.plugins.hiltAndroid)
+    alias(libs.plugins.kotlinAndroidKsp)
 }
 
 android {
@@ -63,9 +66,14 @@ dependencies {
     implementation(libs.androidx.material.icons.extended)
     //----
     //----
-
-//navigation
+    //navigation
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
-//----
+    //----
+    //hilt
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.compiler)
+//    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    //----
 }
