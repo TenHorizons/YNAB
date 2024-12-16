@@ -1,4 +1,4 @@
-package com.ynab.ui.login
+package com.ynab.ui.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,16 +21,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ynab.ui.shared.ConfirmPasswordField
 import com.ynab.ui.shared.PasswordField
 import com.ynab.ui.shared.UsernameField
 
 @Composable
-fun Login(
+fun Register(
     modifier: Modifier = Modifier,
-    vm: LoginViewModel = hiltViewModel(),
-    onRegisterClick: () -> Unit = {},
-    onLoginSuccess: () -> Unit = {}
+    onLoginClick: () -> Unit = {},
+    onRegisterSuccess: () -> Unit = {}
 ) {
+    val vm: RegisterViewModel = hiltViewModel()
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val kbController = LocalSoftwareKeyboardController.current
 
@@ -43,26 +44,27 @@ fun Login(
 
         UsernameField(uiState.username, vm::onUsernameChange, textFieldModifier)
         PasswordField(uiState.password, vm::onPasswordChange, textFieldModifier)
+        ConfirmPasswordField(uiState.confirmPassword, vm::onConfirmPasswordChange, textFieldModifier)
 
         Button(
             onClick = {
                 kbController?.hide()
-                vm.onLoginClick(onLoginSuccess = onLoginSuccess)
+                vm.onRegisterClick(onRegisterSuccess = onRegisterSuccess)
             },
             modifier = Modifier.fillMaxWidth().padding(16.dp,8.dp)
         ) {
-            Text(text = "Sign In", fontSize = 16.sp)
+            Text(text = "Register", fontSize = 16.sp)
         }
 
-        if (uiState.isLoginInProgress) CircularProgressIndicator()
+        if (uiState.isRegisterInProgress) CircularProgressIndicator()
         else
         TextButton(
-            onClick = { onRegisterClick() },
+            onClick = { onLoginClick() },
             modifier = Modifier.fillMaxWidth().padding(16.dp,8.dp,16.dp,0.dp)
         ) {
-            Text("New User? Click to Sign Up")
+           Text("Already a user? Click to sign in")
         }
-        if (uiState.isLoginError) {
+        if (uiState.isRegisterError) {
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.errorContainer

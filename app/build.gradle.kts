@@ -74,7 +74,16 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)
+    testImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.hilt.android.testing)
     androidTestImplementation(libs.androidx.hilt.navigation.compose)
+    //----
+    //Room
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
+    androidTestImplementation(libs.room.testing)
+    implementation(libs.room.paging)
+    androidTestImplementation(libs.androidx.arch.core.testing)
     //----
 }

@@ -1,39 +1,19 @@
 package com.ynab.domain
 
+import com.ynab.data.repository.UserRepository
 import javax.inject.Inject
 
 class BasicAuthUseCaseImpl @Inject constructor(
-//    private val userRepository: UserRepository
+    private val userRepository: UserRepository
 ): BasicAuthUseCase {
 
-//    override suspend fun verifyUser(username: String, password: String): Boolean {
-//        val retrievedPassword = userRepository.getUserPassword(username)
-//        return when {
-//            retrievedPassword.isEmpty() -> false
-//            retrievedPassword == password -> true
-//            else -> false
-//        }
-//    }
-//
-//    override suspend fun isUsernameExist(username: String): Boolean =
-//        userRepository.isUsernameExist(username)
-//
-//    override suspend fun registerUser(username: String, password: String): Boolean {
-//        return userRepository.addUser(username,password)
-//    }
-
-    override suspend fun verifyUser(username: String, password: String): Boolean {
-        val retrievedPassword = "Alice123"
-        return when {
-            retrievedPassword.isEmpty() -> false
-            retrievedPassword == password -> true
-            else -> false
-        }
-    }
+    override suspend fun verifyUser(username: String, password: String): Boolean =
+        userRepository.getUserPassword(username) == password
 
     override suspend fun isUsernameExist(username: String): Boolean =
-        username == "Alice"
+        userRepository.isUsernameExist(username)
 
     override suspend fun registerUser(username: String, password: String): Boolean =
-        username != "Alice"
+        userRepository.addUser(username,password)
+
 }
