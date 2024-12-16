@@ -19,5 +19,6 @@ Planned features include
 
 
 Far-future features include:
+- Enhance splash screen to include a simple walkthrough on how to use the app
 - Cloud storage (maybe Firebase if webage friendly)
 - Webpage
