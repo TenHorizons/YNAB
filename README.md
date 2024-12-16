@@ -1,8 +1,10 @@
 Writing my own YNAB so I don't need to pay subscription.
 Using Kotlin with Room.
 
+
 Ready features include:
 - Simple register and login with Room
+
 
 Planned features include
 1.  Splash(Loading) screen to load user data/generate new user data
@@ -14,6 +16,7 @@ Planned features include
 8.  Budget page with top bar month scroller, with updates from transactions, and ability to assign surplus income (default to only 1 budget).
 9.  Budget Item page with budget item details.
 10.  Goal page to set goal per budget item, with change reflected across relevant budget items across months. (Goal should be decoupled from budget item)
+
 
 Far-future features include:
 - Cloud storage (maybe Firebase if webage friendly)
