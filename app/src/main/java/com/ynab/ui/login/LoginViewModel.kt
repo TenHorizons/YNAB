@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,12 +34,17 @@ class LoginViewModel @Inject constructor(
             //Login user
             val isUserValid =
                 basicAuthUseCase.verifyUser(uiState.value.username,uiState.value.password)
-            if(isUserValid) onLoginSuccess()
-            else _uiState.update { it.copy(
-                isLoginInProgress = false,
-                isLoginError = true,
-                errorMessage = "Invalid username or password."
-            ) }
+            withContext(Dispatchers.Main){
+                if(isUserValid) {
+                    basicAuthUseCase.setSessionUsername(uiState.value.username)
+                    onLoginSuccess()
+                }
+                else _uiState.update { it.copy(
+                    isLoginInProgress = false,
+                    isLoginError = true,
+                    errorMessage = "Invalid username or password."
+                ) }
+            }
         }
     }
     fun hideAfterDelay(duration: Long){

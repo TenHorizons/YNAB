@@ -14,12 +14,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.ynab.ui.theme.YNABTheme
 import com.ynab.ui.login.Login
 import com.ynab.ui.register.Register
+import com.ynab.ui.splash.Splash
+import com.ynab.ui.splash.SplashViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val TAG = "YNAB_MainActivity"
+const val TAG_PREFIX = "YNAB_"
+private const val TAG = "${TAG_PREFIX}MainActivity"
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,14 +50,21 @@ fun Main(modifier: Modifier = Modifier) {
             Login(
                 modifier = modifier,
                 onRegisterClick = { navController.navigate(route = Register) },
-                onLoginSuccess = { Log.d(TAG, "Login Success") }
+                onLoginSuccess = { navController.navigate(route = Splash(isNewUser = false)) }
             )
         }
         composable<Register> {
             Register(
                 modifier = modifier,
                 onLoginClick = { navController.navigate(route = Login) },
-                onRegisterSuccess = { Log.d(TAG, "Register Success") }
+                onRegisterSuccess = { navController.navigate(route = Splash(isNewUser = true)) }
+            )
+        }
+        composable<Splash> { backStackEntry ->
+            Splash(
+                isNewUser = (backStackEntry.toRoute() as Splash).isNewUser,
+                modifier = modifier,
+                onStartupComplete = { Log.d(TAG, "Startup Complete") }
             )
         }
     }

@@ -16,4 +16,6 @@ class BasicAuthUseCaseImpl @Inject constructor(
     override suspend fun registerUser(username: String, password: String): Boolean =
         userRepository.addUser(username,password)
 
+    override fun setSessionUsername(username: String): Boolean =
+        userRepository.setSessionUsername(username)
 }

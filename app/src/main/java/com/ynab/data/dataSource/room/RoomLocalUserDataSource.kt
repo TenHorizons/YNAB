@@ -2,10 +2,11 @@ package com.ynab.data.dataSource.room
 
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
+import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.LocalUserDataSource
 import javax.inject.Inject
 
-private const val TAG = "YNAB_RoomLocalUserDataSource"
+private const val TAG = "${TAG_PREFIX}RoomLocalUserDataSource"
 
 class RoomLocalUserDataSource @Inject constructor(
     private val db: RoomDatabase
