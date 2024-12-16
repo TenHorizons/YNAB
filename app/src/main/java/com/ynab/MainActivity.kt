@@ -19,7 +19,7 @@ import com.ynab.ui.login.Login
 import com.ynab.ui.register.Register
 import dagger.hilt.android.AndroidEntryPoint
 
-private const val TAG = "MainActivity"
+private const val TAG = "YNAB_MainActivity"
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

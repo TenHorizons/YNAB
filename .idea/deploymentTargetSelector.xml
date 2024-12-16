@@ -5,10 +5,10 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="LoginViewModelTest">
+      <SelectionState runConfigName="loginViewModel_UsernameExistAndPasswordCorrect_LoginSuccess()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="loginViewModel_UsernameExistAndPasswordCorrect_LoginSuccess()">
+      <SelectionState runConfigName="UserDaoTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

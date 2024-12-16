@@ -9,7 +9,7 @@ data object Login
 data object Register
 
 @Serializable
-data object Splash
+data class Splash(val isNewUser: Boolean)
 
 @Serializable
 data object Budget
