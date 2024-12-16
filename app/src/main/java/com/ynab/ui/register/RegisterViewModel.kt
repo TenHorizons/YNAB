@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -46,18 +47,24 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch(context = Dispatchers.IO) {
             //Check if username already exist.
             if(basicAuthUseCase.isUsernameExist(uiState.value.username)) {
-                _uiState.update { it.copy(
-                    isRegisterInProgress = false,
-                    isRegisterError = true,
-                    errorMessage = "Username already exists."
-                ) }
+                withContext(Dispatchers.Main){
+                    _uiState.update { it.copy(
+                        isRegisterInProgress = false,
+                        isRegisterError = true,
+                        errorMessage = "Username already exists."
+                    ) }
+                }
                 return@launch
             }
 
             //Register user
             val isUserRegistered =
                 basicAuthUseCase.registerUser(uiState.value.username,uiState.value.password)
-            if(isUserRegistered) onRegisterSuccess()
+            //set user session
+            if(isUserRegistered) {
+                basicAuthUseCase.setSessionUsername(uiState.value.username)
+                onRegisterSuccess()
+            }
             else _uiState.update { it.copy(
                 isRegisterInProgress = false,
                 isRegisterError = true,

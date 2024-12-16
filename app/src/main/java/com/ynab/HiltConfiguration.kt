@@ -9,6 +9,8 @@ import com.ynab.data.repository.UserRepository
 import com.ynab.data.repository.UserRepositoryImpl
 import com.ynab.domain.BasicAuthUseCase
 import com.ynab.domain.BasicAuthUseCaseImpl
+import com.ynab.domain.FakeLoadAppUseCase
+import com.ynab.domain.LoadAppUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -26,6 +28,8 @@ abstract class HiltBindings {
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
     @Binds
     abstract fun bindLocalUserDataSource(impl: RoomLocalUserDataSource): LocalUserDataSource
+    @Binds
+    abstract fun bindLoadAppUseCase(impl: FakeLoadAppUseCase): LoadAppUseCase
 }
 
 @Module
