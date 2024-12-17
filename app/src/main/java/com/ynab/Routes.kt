@@ -1,5 +1,6 @@
 package com.ynab
 
+import androidx.compose.ui.graphics.vector.ImageVector
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -37,3 +38,5 @@ data class Transaction(val transactionId: Int)
 
 @Serializable
 data object Settings
+
+data class TopLevelRoute<T: Any>(val name: String, val route: T, val icon: ImageVector)

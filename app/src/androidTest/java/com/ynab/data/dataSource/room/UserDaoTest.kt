@@ -42,4 +42,17 @@ class UserDaoTest {
             assert(userDao.getPassword(user.username) == user.password)
         }
     }
+
+    @Test
+    @Throws(Exception::class)
+    fun deleteUser() {
+        runTest {
+            val user = User( username = "Ben", password = "Ben123")
+            userDao.insert(user)
+
+            assert(userDao.isUsernameExist(user.username))
+            assert(userDao.getPassword(user.username) == user.password)
+            assert(userDao.deleteUser(user.username) == 1)
+        }
+    }
 }

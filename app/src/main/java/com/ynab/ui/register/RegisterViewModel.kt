@@ -60,16 +60,19 @@ class RegisterViewModel @Inject constructor(
             //Register user
             val isUserRegistered =
                 basicAuthUseCase.registerUser(uiState.value.username,uiState.value.password)
-            //set user session
-            if(isUserRegistered) {
-                basicAuthUseCase.setSessionUsername(uiState.value.username)
-                onRegisterSuccess()
+
+            withContext(Dispatchers.Main){
+                //set user session
+                if(isUserRegistered) {
+                    basicAuthUseCase.setSessionUsername(uiState.value.username)
+                    onRegisterSuccess()
+                }
+                else _uiState.update { it.copy(
+                    isRegisterInProgress = false,
+                    isRegisterError = true,
+                    errorMessage = "Unknown error occurred when registering user."
+                ) }
             }
-            else _uiState.update { it.copy(
-                isRegisterInProgress = false,
-                isRegisterError = true,
-                errorMessage = "Unknown error occurred when registering user."
-            ) }
         }
     }
     fun hideAfterDelay(duration: Long){

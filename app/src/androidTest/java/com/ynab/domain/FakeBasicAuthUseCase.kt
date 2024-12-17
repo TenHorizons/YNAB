@@ -11,4 +11,8 @@ class FakeBasicAuthUseCase @Inject constructor(): BasicAuthUseCase {
 
     override suspend fun registerUser(username: String, password: String): Boolean =
         username != "Alice"
+
+    override fun setSessionUsername(username: String): Boolean {
+        TODO("Not yet implemented")
+    }
 }

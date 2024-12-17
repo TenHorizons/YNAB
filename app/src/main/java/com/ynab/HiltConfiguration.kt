@@ -25,8 +25,10 @@ abstract class HiltBindings {
     @Binds
     abstract fun bindBasicAuthUseCase(impl: BasicAuthUseCaseImpl): BasicAuthUseCase
     @Binds
+    @Singleton
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
     @Binds
+    @Singleton
     abstract fun bindLocalUserDataSource(impl: RoomLocalUserDataSource): LocalUserDataSource
     @Binds
     abstract fun bindLoadAppUseCase(impl: FakeLoadAppUseCase): LoadAppUseCase

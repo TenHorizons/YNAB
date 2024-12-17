@@ -9,6 +9,7 @@ import com.ynab.domain.LoadAppUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}SplashScreenViewModel"
@@ -32,17 +33,19 @@ class SplashViewModel @Inject constructor(
                 if (isNewUser) loadAppUseCase.generateNewUserData()
                 else loadAppUseCase.loadUserData()
 
-            if (error == null) {
-                val end = System.currentTimeMillis()
-                Log.d(TAG, "load end: $end")
-                Log.d(TAG, "load time: ${end - start}")
-                onStartupComplete()
-            } else {
-                val action = if (isNewUser) "generate" else "load"
-                uiState.value = uiState.value.copy(
-                    showError = true,
-                    errorMessage = "failed to $action user data. Error: \n${error.message}"
-                )
+            withContext(Dispatchers.Main) {
+                if (error == null) {
+                    val end = System.currentTimeMillis()
+                    Log.d(TAG, "load end: $end")
+                    Log.d(TAG, "load time: ${end - start}")
+                    onStartupComplete()
+                } else {
+                    val action = if (isNewUser) "generate" else "load"
+                    uiState.value = uiState.value.copy(
+                        showError = true,
+                        errorMessage = "failed to $action user data. Error: \n${error.message}"
+                    )
+                }
             }
         }
     }

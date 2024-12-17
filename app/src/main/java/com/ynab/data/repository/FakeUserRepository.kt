@@ -13,6 +13,9 @@ class FakeUserRepository @Inject constructor(): UserRepository {
         username != "Alice"
 
     override fun setSessionUsername(username: String): Boolean = true
+    override suspend fun deleteUser(): Boolean {
+        TODO("Not yet implemented")
+    }
 
     override fun saveAllData() =
         TODO("Not yet implemented")

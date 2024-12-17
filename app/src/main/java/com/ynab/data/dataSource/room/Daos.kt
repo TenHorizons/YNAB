@@ -16,6 +16,9 @@ interface UserDao {
     @Query("select exists (select username from user where username = :username)")
     suspend fun isUsernameExist(username: String): Boolean
 
+    @Query("delete from user where username = :username")
+    suspend fun deleteUser(username: String): Int
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(user: User): Long //OnConflictStrategy.ABORT: SQLiteConstraintException of username exists
 
