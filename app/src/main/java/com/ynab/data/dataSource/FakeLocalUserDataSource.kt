@@ -12,4 +12,8 @@ class FakeLocalUserDataSource @Inject constructor(): LocalUserDataSource {
     override suspend fun addUser(username: String, password: String): Boolean =
         username != "Alice"
 
+    override suspend fun deleteUser(username: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
 }

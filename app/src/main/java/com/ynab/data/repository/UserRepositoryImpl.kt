@@ -4,9 +4,11 @@ import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.UserDataSource
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val TAG = "${TAG_PREFIX}UserRepository"
 
+@Singleton
 class UserRepositoryImpl @Inject constructor(
     private val userDs: UserDataSource
 ): UserRepository {
@@ -31,6 +33,12 @@ class UserRepositoryImpl @Inject constructor(
     override fun setSessionUsername(username: String): Boolean {
         sessionUsername = username
         return true
+    }
+
+    override suspend fun deleteUser(): Boolean {
+        if(userDs.deleteUser(sessionUsername)) return true
+        Log.d(TAG, "Failed to delete user")
+        return false
     }
 
     override fun saveAllData() {

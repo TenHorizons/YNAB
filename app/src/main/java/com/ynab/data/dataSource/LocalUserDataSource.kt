@@ -11,4 +11,5 @@ interface LocalUserDataSource {
     /**Adds a single user. Returns false if failed to add.
      * Failure to add is usually due to constraint conflict, such as username already exist*/
     suspend fun addUser(username: String, password: String): Boolean
+    suspend fun deleteUser(username: String): Boolean
 }
