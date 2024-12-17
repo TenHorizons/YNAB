@@ -1,12 +1,14 @@
 package com.ynab
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -24,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.ynab.ui.accounts.Accounts
 import com.ynab.ui.theme.YNABTheme
 import com.ynab.ui.login.Login
 import com.ynab.ui.register.Register
@@ -56,6 +59,7 @@ fun Main(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     val topLevelRoutes = listOf(
+        TopLevelRoute("Accounts", Accounts, Icons.Default.AccountBalance),
         TopLevelRoute("Settings", Settings, Icons.Default.Settings)
     )
 
@@ -119,6 +123,14 @@ fun Main(modifier: Modifier = Modifier) {
             Settings(
                 modifier = modifier,
                 bottomNavBar = bottomNavBar
+            )
+        }
+        composable<Accounts> {
+            Accounts(
+                modifier = modifier,
+                bottomNavBar = bottomNavBar,
+                onAccountClicked = { Log.d(TAG, "Account ${it.accountName} clicked") },
+                onAllTransactionsClicked = { Log.d(TAG, "All transactions clicked") }
             )
         }
     }

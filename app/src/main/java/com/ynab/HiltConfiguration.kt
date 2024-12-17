@@ -5,6 +5,8 @@ import androidx.room.Room
 import com.ynab.data.dataSource.LocalUserDataSource
 import com.ynab.data.dataSource.room.RoomDatabase
 import com.ynab.data.dataSource.room.RoomLocalUserDataSource
+import com.ynab.data.repository.AccountRepository
+import com.ynab.data.repository.FakeAccountRepository
 import com.ynab.data.repository.UserRepository
 import com.ynab.data.repository.UserRepositoryImpl
 import com.ynab.domain.BasicAuthUseCase
@@ -32,6 +34,8 @@ abstract class HiltBindings {
     abstract fun bindLocalUserDataSource(impl: RoomLocalUserDataSource): LocalUserDataSource
     @Binds
     abstract fun bindLoadAppUseCase(impl: FakeLoadAppUseCase): LoadAppUseCase
+    @Binds
+    abstract fun bindAccountRepository(impl: FakeAccountRepository): AccountRepository
 }
 
 @Module
