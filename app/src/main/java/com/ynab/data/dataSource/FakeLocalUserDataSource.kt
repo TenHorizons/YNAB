@@ -1,5 +1,6 @@
 package com.ynab.data.dataSource
 
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FakeLocalUserDataSource @Inject constructor(): LocalUserDataSource {
@@ -13,6 +14,10 @@ class FakeLocalUserDataSource @Inject constructor(): LocalUserDataSource {
         username != "Alice"
 
     override suspend fun deleteUser(username: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserLastBudgetId(username: String): Flow<Int> {
         TODO("Not yet implemented")
     }
 

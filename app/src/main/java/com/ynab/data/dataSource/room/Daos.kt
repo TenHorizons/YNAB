@@ -6,6 +6,8 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.ynab.data.repository.dataClass.Account
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -19,6 +21,9 @@ interface UserDao {
     @Query("delete from user where username = :username")
     suspend fun deleteUser(username: String): Int
 
+    @Query("select lastBudgetId from user where username = :username")
+    fun getUserLastBudgetId(username: String): Flow<Int>
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(user: User): Long //OnConflictStrategy.ABORT: SQLiteConstraintException of username exists
 
@@ -27,4 +32,10 @@ interface UserDao {
 
     @Delete
     suspend fun delete(user: User): Int //returns number of rows deleted
+}
+
+@Dao
+interface AccountDao {
+    @Query("select * from account where budgetId = :budgetId")
+    fun getAccountsByBudgetId(budgetId: Int): Flow<List<Account>>
 }

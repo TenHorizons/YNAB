@@ -37,4 +37,8 @@ class FakeAccountRepository @Inject constructor(): AccountRepository {
             delay(5000)
         }
     }
+
+    override fun saveAllData() {
+        TODO("Not yet implemented")
+    }
 }

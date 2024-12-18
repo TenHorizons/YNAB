@@ -8,4 +8,7 @@ plugins {
     //hilt
     alias(libs.plugins.hiltAndroid) apply false
     alias(libs.plugins.kotlinAndroidKsp) apply false
+    //----
+    //Room
+    alias(libs.plugins.room) apply false
 }

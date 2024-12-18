@@ -3,6 +3,7 @@ package com.ynab.data.repository
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.UserDataSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,6 +35,11 @@ class UserRepositoryImpl @Inject constructor(
         sessionUsername = username
         return true
     }
+
+    override fun getSessionUsername(): String = sessionUsername
+
+    override fun getUserLastBudgetId(): Flow<Int> =
+        userDs.getUserLastBudgetId(sessionUsername)
 
     override suspend fun deleteUser(): Boolean {
         if(userDs.deleteUser(sessionUsername)) return true

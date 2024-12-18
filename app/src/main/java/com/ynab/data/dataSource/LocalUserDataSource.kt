@@ -1,5 +1,7 @@
 package com.ynab.data.dataSource
 
+import kotlinx.coroutines.flow.Flow
+
 interface LocalUserDataSource {
 
     /**Returns user password as String if found. Else returns empty string.*/
@@ -12,4 +14,5 @@ interface LocalUserDataSource {
      * Failure to add is usually due to constraint conflict, such as username already exist*/
     suspend fun addUser(username: String, password: String): Boolean
     suspend fun deleteUser(username: String): Boolean
+    fun getUserLastBudgetId(username: String): Flow<Int>
 }
