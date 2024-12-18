@@ -51,6 +51,10 @@ class FakeAccountRepository @Inject constructor(): AccountRepository {
         TODO("Not yet implemented")
     }
 
+    override fun deleteAccount(account: Account) {
+        TODO("Not yet implemented")
+    }
+
     override fun saveAllData() {
         TODO("Not yet implemented")
     }

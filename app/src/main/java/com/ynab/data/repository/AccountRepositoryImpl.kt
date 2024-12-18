@@ -47,6 +47,15 @@ class AccountRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun deleteAccount(account: Account) {
+        try{
+            return accountDs.deleteAccount(account)
+        }catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred at deleteAccount: ${e.stackTrace}")
+            throw e
+        }
+    }
+
     override fun saveAllData() {
         TODO("Not yet implemented")
     }

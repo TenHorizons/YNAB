@@ -20,4 +20,7 @@ class AccountDataSource @Inject constructor(
 
     fun updateAccount(accountToEdit: Account, newAccountName: String): Boolean =
         localAccountDataSource.updateAccount(accountToEdit, newAccountName)
+
+    fun deleteAccount(account: Account) =
+        localAccountDataSource.deleteAccount(account)
 }

@@ -47,4 +47,7 @@ interface AccountDao {
 
     @Update
     fun update(account: Account): Int //returns number of rows updated
+
+    @Delete
+    fun delete(account: Account)
 }

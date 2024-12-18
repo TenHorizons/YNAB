@@ -66,6 +66,9 @@ class RoomLocalAccountDataSource @Inject constructor(
         }
     }
 
+    override fun deleteAccount(account: Account) =
+        accountDao.delete(account.toRoomAccount())
+
     private fun com.ynab.data.dataSource.room.Account.toUiAccount(): Account =
         Account(
             accountId = accountId,

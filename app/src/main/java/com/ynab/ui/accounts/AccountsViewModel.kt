@@ -19,57 +19,65 @@ private const val TAG = "${TAG_PREFIX}AccountsViewModel"
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
     private val accountRepository: AccountRepository
-): ViewModel() {
+) : ViewModel() {
     val accounts = accountRepository.accounts
 
     private val _uiState = MutableStateFlow(AccountsState())
     val uiState: StateFlow<AccountsState> = _uiState
 
     fun onOpenDialog(account: Account) =
-        _uiState.update { it.copy(
-            isDialogOpen = true,
-            accountToEdit = account,
-            editAccountText = account.accountName,
-            isEditInProgress = false
-        ) }
+        _uiState.update {
+            it.copy(
+                isDialogOpen = true,
+                accountToEdit = account,
+                editAccountText = account.accountName,
+                isEditInProgress = false
+            )
+        }
 
     fun onDismissDialog() =
-        _uiState.update { it.copy(
-            isDialogOpen = false,
-            accountToEdit = null,
-            editAccountText = "",
-            isEditInProgress = false
-        ) }
+        _uiState.update {
+            it.copy(
+                isDialogOpen = false,
+                accountToEdit = null,
+                editAccountText = "",
+                isEditInProgress = false
+            )
+        }
 
     fun onEditAccountTextChange(value: String) =
         _uiState.update { it.copy(editAccountText = value) }
 
-    fun onEditAccountNameClick() {
-
+    fun editAccountName() {
         viewModelScope.launch(Dispatchers.IO) {
             val isAccountExist =
                 accountRepository.isAccountNameExist(uiState.value.editAccountText)
             if (isAccountExist)
                 withContext(Dispatchers.Main) {
-                    _uiState.update { it.copy(
-                        isEditInProgress = false,
-                        isEditError = true,
-                        errorMessage = "Account Name already exists."
-                    ) }
+                    _uiState.update {
+                        it.copy(
+                            isEditInProgress = false,
+                            isEditError = true,
+                            errorMessage = "Account Name already exists."
+                        )
+                    }
                 }
             else {
                 val isEditSuccess =
                     accountRepository.updateAccountName(
                         uiState.value.accountToEdit!!,
-                        uiState.value.editAccountText)
+                        uiState.value.editAccountText
+                    )
                 if (isEditSuccess)
                     withContext(Dispatchers.Main) {
-                        _uiState.update { it.copy(
-                            isEditInProgress = false,
-                            isDialogOpen = false,
-                            accountToEdit = null,
-                            editAccountText = ""
-                        ) }
+                        _uiState.update {
+                            it.copy(
+                                isEditInProgress = false,
+                                isDialogOpen = false,
+                                accountToEdit = null,
+                                editAccountText = ""
+                            )
+                        }
                     }
                 else
                     withContext(Dispatchers.Main) {
@@ -82,6 +90,12 @@ class AccountsViewModel @Inject constructor(
                         }
                     }
             }
+        }
+    }
+
+    fun deleteAccount(account: Account) {
+        viewModelScope.launch(Dispatchers.IO) {
+            accountRepository.deleteAccount(account)
         }
     }
 }
