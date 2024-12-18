@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.LocalUserDataSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -11,7 +12,7 @@ private const val TAG = "${TAG_PREFIX}RoomLocalUserDataSource"
 
 @Singleton
 class RoomLocalUserDataSource @Inject constructor(
-    private val db: RoomDatabase
+    db: RoomDatabase
 ): LocalUserDataSource {
     private val userDao = db.userDao()
     override suspend fun getPassword(username: String): String? =
@@ -35,4 +36,7 @@ class RoomLocalUserDataSource @Inject constructor(
 
     override suspend fun deleteUser(username: String): Boolean =
         userDao.deleteUser(username) > 0
+
+    override fun getUserLastBudgetId(username: String): Flow<Int> =
+        userDao.getUserLastBudgetId(username)
 }

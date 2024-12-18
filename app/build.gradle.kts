@@ -7,6 +7,8 @@ plugins {
     //hilt
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.kotlinAndroidKsp)
+    //room
+    alias(libs.plugins.room)
 }
 
 android {
@@ -41,6 +43,10 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    //room gradle plugin: enable exportSchema for auto-migration
+    room {
+        schemaDirectory("$projectDir/roomSchemas")
     }
 }
 

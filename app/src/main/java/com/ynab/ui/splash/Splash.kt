@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun Splash(
@@ -29,7 +30,7 @@ fun Splash(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val uiState by vm.uiState
+        val uiState by vm.uiState.collectAsStateWithLifecycle()
         if (uiState.showError) {
             Text(text = uiState.errorMessage)
 

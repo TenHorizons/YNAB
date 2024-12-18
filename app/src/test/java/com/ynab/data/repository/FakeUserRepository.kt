@@ -1,5 +1,6 @@
 package com.ynab.data.repository
 
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FakeUserRepository @Inject constructor(): UserRepository {
@@ -16,7 +17,19 @@ class FakeUserRepository @Inject constructor(): UserRepository {
         TODO("Not yet implemented")
     }
 
+    override fun getSessionUsername(): String {
+        TODO("Not yet implemented")
+    }
+
+    override fun getUserLastBudgetId(): Flow<Int> {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteUser(): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override fun setSelectedBudgetId(budgetId: Int) {
         TODO("Not yet implemented")
     }
 

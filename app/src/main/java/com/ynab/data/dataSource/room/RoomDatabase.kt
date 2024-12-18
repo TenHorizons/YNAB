@@ -2,14 +2,17 @@ package com.ynab.data.dataSource.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 
 @Database(
     entities = [
-        User::class
+        User::class,
+        Account::class
     ],
-    version = 1,
-    exportSchema = false
+    version = 2
 )
-abstract class RoomDatabase: RoomDatabase() {
+@TypeConverters(Converter::class)
+abstract class RoomDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
+    abstract fun accountDao(): AccountDao
 }

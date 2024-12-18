@@ -3,6 +3,7 @@ package com.ynab.data.repository
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.UserDataSource
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -22,8 +23,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun addUser(username: String, password: String): Boolean {
         if(userDs.isUsernameExist(username)) return false
         try {
-            userDs.addUser(username, password)
-            return true
+            return userDs.addUser(username, password)
         }catch (e: Exception) {
             Log.e(TAG, "An unknown error occurred at addUser: ${e.stackTrace}")
             throw e
@@ -34,6 +34,11 @@ class UserRepositoryImpl @Inject constructor(
         sessionUsername = username
         return true
     }
+
+    override fun getSessionUsername(): String = sessionUsername
+
+    override fun getUserLastBudgetId(): Flow<Int> =
+        userDs.getUserLastBudgetId(sessionUsername)
 
     override suspend fun deleteUser(): Boolean {
         if(userDs.deleteUser(sessionUsername)) return true
