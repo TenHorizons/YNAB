@@ -9,4 +9,5 @@ interface AccountRepository: Repository {
 
     suspend fun isAccountNameExist(accountName: String): Boolean
     suspend fun addAccount(accountName: String, accountBalance: BigDecimal): Boolean
+    suspend fun updateAccountName(accountToEdit: Account, newAccountName: String): Boolean
 }

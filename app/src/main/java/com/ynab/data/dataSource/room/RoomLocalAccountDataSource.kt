@@ -16,10 +16,12 @@ class RoomLocalAccountDataSource @Inject constructor(
     db: RoomDatabase
 ) : LocalAccountDataSource {
     private val accountDao = db.accountDao()
+
     //Convert Room Account to Ui Account to maintain clean separation of UI and data layers.
     override fun getAccountsByBudgetId(budgetId: Int): Flow<List<Account>> =
         accountDao.getAccountsByBudgetId(budgetId).map { accountList ->
-            accountList.map { roomAccount -> roomAccount.toUiAccount() } }
+            accountList.map { roomAccount -> roomAccount.toUiAccount() }
+        }
 
     override fun isAccountNameExist(accountName: String, budgetId: Int): Boolean =
         accountDao.isAccountNameExist(accountName, budgetId)
@@ -34,23 +36,51 @@ class RoomLocalAccountDataSource @Inject constructor(
                 budgetId = budgetId,
                 accountName = accountName,
                 uiPosition = accountDao.getNumberOfAccountsByBudgetId(budgetId),
-                balance = accountBalance)
+                balance = accountBalance
+            )
             accountDao.insert(newAccount)
             return true
         } catch (e: SQLiteConstraintException) {
-            Log.d(TAG,"addAccount threw SQLiteConstraintException, likely due to account already exist.")
+            Log.d(
+                TAG,
+                "addAccount threw SQLiteConstraintException, likely due to account already exist."
+            )
             return false
-        } catch (e: Exception){
-            Log.e(TAG,"Unknown error at addAccount: ${e.stackTraceToString()}")
+        } catch (e: Exception) {
+            Log.e(TAG, "Unknown error at addAccount: ${e.stackTraceToString()}")
             return false
         }
     }
 
-    private fun com.ynab.data.dataSource.room.Account.toUiAccount(): Account = Account(
-        accountId = accountId,
-        budgetId = budgetId,
-        accountName = accountName,
-        uiPosition = uiPosition,
-        balance = balance
-    )
+    override fun updateAccount(accountToEdit: Account, newAccountName: String): Boolean {
+        try {
+            return accountDao.update(
+                accountToEdit.copy(accountName = newAccountName).toRoomAccount()
+            ) == 1
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
+            return false
+        } catch (e: Exception) {
+            Log.e(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
+            return false
+        }
+    }
+
+    private fun com.ynab.data.dataSource.room.Account.toUiAccount(): Account =
+        Account(
+            accountId = accountId,
+            budgetId = budgetId,
+            accountName = accountName,
+            uiPosition = uiPosition,
+            balance = balance
+        )
+
+    private fun Account.toRoomAccount(): com.ynab.data.dataSource.room.Account =
+        com.ynab.data.dataSource.room.Account(
+            accountId = accountId,
+            budgetId = budgetId,
+            accountName = accountName,
+            uiPosition = uiPosition,
+            balance = balance
+        )
 }

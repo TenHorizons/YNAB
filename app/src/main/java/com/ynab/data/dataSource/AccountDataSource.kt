@@ -17,4 +17,7 @@ class AccountDataSource @Inject constructor(
 
     fun addAccount(accountName: String, accountBalance: BigDecimal, budgetId: Int): Boolean =
         localAccountDataSource.addAccount(accountName, accountBalance, budgetId)
+
+    fun updateAccount(accountToEdit: Account, newAccountName: String): Boolean =
+        localAccountDataSource.updateAccount(accountToEdit, newAccountName)
 }

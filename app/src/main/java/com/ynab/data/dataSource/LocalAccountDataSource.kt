@@ -8,5 +8,6 @@ interface LocalAccountDataSource {
     fun getAccountsByBudgetId(budgetId: Int): Flow<List<Account>>
     fun isAccountNameExist(accountName: String, budgetId: Int): Boolean
     fun addAccount(accountName: String, accountBalance: BigDecimal, budgetId: Int): Boolean
+    fun updateAccount(accountToEdit: Account, newAccountName: String): Boolean
 
 }

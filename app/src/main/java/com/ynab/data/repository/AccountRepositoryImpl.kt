@@ -3,6 +3,7 @@ package com.ynab.data.repository
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.AccountDataSource
+import com.ynab.data.repository.dataClass.Account
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -32,6 +33,16 @@ class AccountRepositoryImpl @Inject constructor(
             return accountDs.addAccount(accountName, accountBalance, userRepository.getUserLastBudgetId().first())
         }catch (e: Exception) {
             Log.e(TAG, "An unknown error occurred at addAccount: ${e.stackTrace}")
+            throw e
+        }
+    }
+
+    override suspend fun updateAccountName(accountToEdit: Account, newAccountName: String): Boolean {
+        if(isAccountNameExist(newAccountName)) return false
+        try{
+            return accountDs.updateAccount(accountToEdit, newAccountName)
+        }catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred at updateAccountName: ${e.stackTrace}")
             throw e
         }
     }

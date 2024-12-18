@@ -47,6 +47,10 @@ class FakeAccountRepository @Inject constructor(): AccountRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateAccountName(accountToEdit: Account, newAccountName: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
     override fun saveAllData() {
         TODO("Not yet implemented")
     }

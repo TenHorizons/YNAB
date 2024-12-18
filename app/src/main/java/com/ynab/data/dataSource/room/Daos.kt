@@ -44,4 +44,7 @@ interface AccountDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(account: Account): Long // returns the id of the added record
+
+    @Update
+    fun update(account: Account): Int //returns number of rows updated
 }
