@@ -56,14 +56,15 @@ fun Register(
             Text(text = "Register", fontSize = 16.sp)
         }
 
-        if (uiState.isRegisterInProgress) CircularProgressIndicator()
+        if (uiState.isRegisterInProgress)
+            CircularProgressIndicator()
         else
-        TextButton(
+            TextButton(
             onClick = { onLoginClick() },
             modifier = Modifier.fillMaxWidth().padding(16.dp,8.dp,16.dp,0.dp)
-        ) {
-           Text("Already a user? Click to sign in")
-        }
+            ) {
+                Text("Already a user? Click to sign in")
+            }
         if (uiState.isRegisterError) {
             Card(
                 colors = CardDefaults.cardColors(

@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,20 +44,23 @@ fun Accounts(
     vm: AccountsViewModel = hiltViewModel(),
     bottomNavBar: @Composable () -> Unit,
     onAccountClicked: (Account) -> Unit = {},
-    onAllTransactionsClicked: () -> Unit = {}
+    onAllTransactionsClicked: () -> Unit = {},
+    onAddAccountClicked: () -> Unit = {}
 ) {
     val accounts by vm.accounts.collectAsStateWithLifecycle(initialValue = listOf())
 
     Scaffold(
         modifier = modifier,
         topBar = {
-            TopAppBar(title = {
+            TopAppBar(
+                title = {
                 Text(
                     "Accounts",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
-                )
-            })
+                ) },
+                actions = { TextButton(onClick = onAddAccountClicked) { Text("Add Account") } }
+            )
         },
         bottomBar = bottomNavBar
     ) { innerPadding ->

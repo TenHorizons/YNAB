@@ -4,6 +4,7 @@ import com.ynab.data.repository.dataClass.Account
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.math.BigDecimal
 import javax.inject.Inject
 
 class FakeAccountRepository @Inject constructor(): AccountRepository {
@@ -36,6 +37,14 @@ class FakeAccountRepository @Inject constructor(): AccountRepository {
             )
             delay(5000)
         }
+    }
+
+    override suspend fun isAccountNameExist(accountName: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun addAccount(accountName: String, accountBalance: BigDecimal): Boolean {
+        TODO("Not yet implemented")
     }
 
     override fun saveAllData() {

@@ -6,7 +6,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import com.ynab.data.repository.dataClass.Account
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -38,4 +37,11 @@ interface UserDao {
 interface AccountDao {
     @Query("select * from account where budgetId = :budgetId")
     fun getAccountsByBudgetId(budgetId: Int): Flow<List<Account>>
+    @Query("select exists (select accountName from account where budgetId = :budgetId and accountName = :accountName)")
+    fun isAccountNameExist(accountName: String, budgetId: Int): Boolean
+    @Query("select count(*) from account where budgetId = :budgetId")
+    fun getNumberOfAccountsByBudgetId(budgetId: Int): Int
+
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insert(account: Account): Long // returns the id of the added record
 }

@@ -23,8 +23,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun addUser(username: String, password: String): Boolean {
         if(userDs.isUsernameExist(username)) return false
         try {
-            userDs.addUser(username, password)
-            return true
+            return userDs.addUser(username, password)
         }catch (e: Exception) {
             Log.e(TAG, "An unknown error occurred at addUser: ${e.stackTrace}")
             throw e
