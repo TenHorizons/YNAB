@@ -3,14 +3,20 @@ package com.ynab
 import android.content.Context
 import androidx.room.Room
 import com.ynab.data.dataSource.LocalAccountDataSource
+import com.ynab.data.dataSource.LocalTransactionDataSource
 import com.ynab.data.dataSource.LocalUserDataSource
 import com.ynab.data.dataSource.room.RoomLocalAccountDataSource
 import com.ynab.data.dataSource.room.RoomDatabase
+import com.ynab.data.dataSource.room.RoomLocalTransactionDataSource
 import com.ynab.data.dataSource.room.RoomLocalUserDataSource
 import com.ynab.data.repository.AccountRepository
 import com.ynab.data.repository.AccountRepositoryImpl
+import com.ynab.data.repository.TransactionRepository
+import com.ynab.data.repository.TransactionRepositoryImpl
 import com.ynab.data.repository.UserRepository
 import com.ynab.data.repository.UserRepositoryImpl
+import com.ynab.domain.AddTransactionUseCase
+import com.ynab.domain.AddTransactionUseCaseImpl
 import com.ynab.domain.BasicAuthUseCase
 import com.ynab.domain.BasicAuthUseCaseImpl
 import com.ynab.domain.LoadAppUseCase
@@ -45,6 +51,15 @@ abstract class HiltBindings {
 
     @Binds
     abstract fun bindLocalAccountDataSource(impl: RoomLocalAccountDataSource): LocalAccountDataSource
+
+    @Binds
+    abstract fun bindAddTransactionUseCase(impl: AddTransactionUseCaseImpl): AddTransactionUseCase
+
+    @Binds
+    abstract fun bindTransactionRepository(impl: TransactionRepositoryImpl): TransactionRepository
+
+    @Binds
+    abstract fun bindLocalTransactionDataSource(impl: RoomLocalTransactionDataSource): LocalTransactionDataSource
 }
 
 @Module

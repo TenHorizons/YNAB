@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.CurrencyExchange
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -21,18 +22,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.ynab.ui.accounts.Accounts
 import com.ynab.ui.addAccount.AddAccount
-import com.ynab.ui.theme.YNABTheme
+import com.ynab.ui.addTransaction.AddTransaction
 import com.ynab.ui.login.Login
 import com.ynab.ui.register.Register
 import com.ynab.ui.settings.Settings
 import com.ynab.ui.splash.Splash
+import com.ynab.ui.theme.YNABTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 const val TAG_PREFIX = "YNAB_"
@@ -60,6 +61,7 @@ fun Main(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     val topLevelRoutes = listOf(
+        TopLevelRoute("Add Transaction", AddTransaction, Icons.Default.CurrencyExchange),
         TopLevelRoute("Accounts", Accounts, Icons.Default.AccountBalance),
         TopLevelRoute("Settings", Settings, Icons.Default.Settings)
     )
@@ -139,6 +141,12 @@ fun Main(modifier: Modifier = Modifier) {
             AddAccount(
                 modifier = modifier,
                 onAddAccountComplete = { navController.popBackStack() }
+            )
+        }
+        composable<AddTransaction> {
+            AddTransaction(
+                modifier = modifier,
+                bottomNavBar = bottomNavBar
             )
         }
     }

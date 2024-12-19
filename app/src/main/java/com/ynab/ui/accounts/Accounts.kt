@@ -30,12 +30,15 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -111,10 +114,16 @@ fun Accounts(
         else
             LazyColumn(
                 modifier = modifier.padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
                     AllTransactions(onClick = onAllTransactionsClicked)
+                }
+                item {
+                    Text(
+                        text = "Long press accounts for more options.",
+                        color = TextFieldDefaults.colors().disabledTextColor)
                 }
                 items(accounts.sortedBy { it.uiPosition }) {
                     Account(
@@ -166,7 +175,7 @@ fun Account(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .wrapContentSize(Alignment.CenterStart)
+            .wrapContentSize(Alignment.BottomCenter)
     ) {
         var menuExpanded by remember { mutableStateOf(false) }
         Card(

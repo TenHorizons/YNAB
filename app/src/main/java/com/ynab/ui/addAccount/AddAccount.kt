@@ -12,6 +12,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ynab.ui.shared.CurrencyAmountInputVisualTransformation
+import com.ynab.ui.shared.LIGHT_GREEN
 import com.ynab.ui.shared.displayTwoDecimal
 
 @Composable
@@ -46,9 +48,12 @@ fun AddAccount(
             fontSize = MaterialTheme.typography.titleLarge.fontSize
         )
         TextField(
-            value = uiState.accountBalance.displayTwoDecimal().toPlainString(),
+            value = uiState.displayedAccountBalance,
+            singleLine = true,
             onValueChange = vm::onBalanceChange,
             modifier = Modifier.fillMaxWidth(),
+            visualTransformation =
+            CurrencyAmountInputVisualTransformation(isPositiveValue = true),
             colors = TextFieldDefaults.colors(
                 focusedIndicatorColor = Transparent,
                 unfocusedIndicatorColor = Transparent,
@@ -84,7 +89,7 @@ fun AddAccount(
                     CardDefaults.cardColors(
                         containerColor =
                         if (uiState.isAddError) MaterialTheme.colorScheme.errorContainer
-                        else Color(0xFFa0d49b)
+                        else LIGHT_GREEN
                     )
                 ) {
                     Row(
