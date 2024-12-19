@@ -8,14 +8,14 @@ Ready features include:
 - Settings page with delete account button (to clean up accounts if I do too much testing)
 - Top app bar and bottom navigation bar
 - Accounts page for bank accounts, with add/delete/update account functionality
+- Add Transaction page
 
 
 Planned features include
-1.  Add Transaction page
-2.  Transaction page under accounts for transactions per account, with  delete/update/filter/sort transaction functionality
-3.  Budget page with top bar month scroller, with updates from transactions, and ability to assign surplus income (default to only 1 budget).
-4.  Budget Item page with budget item details.
-5.  Goal page to set goal per budget item, with change reflected across relevant budget items across months. (Goal should be decoupled from budget item)
+1.  Transaction page under accounts for transactions per account, with  delete/update/filter/sort transaction functionality
+2.  Budget page with top bar month scroller, with updates from transactions, and ability to assign surplus income (default to only 1 budget).
+3.  Budget Item page with budget item details.
+4.  Goal page to set goal per budget item, with change reflected across relevant budget items across months. (Goal should be decoupled from budget item)
 
 
 Far-future features include:
