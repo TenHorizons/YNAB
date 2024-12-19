@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.AccountRepository
+import com.ynab.ui.shared.currencyStringToBigDecimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -12,9 +13,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.math.BigDecimal
-import java.math.MathContext
-import java.math.RoundingMode
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}AddAccountViewModel"
@@ -30,11 +28,9 @@ class AddAccountViewModel @Inject constructor(
         _uiState.update { it.copy(accountName = newName) }
 
     fun onBalanceChange(newValue: String) {
-        val balance = if (newValue == "") BigDecimal.ZERO
-        else newValue.toBigDecimalOrNull(mathContext = MathContext(2,RoundingMode.HALF_UP))
-
-        if (balance != null)
-            _uiState.update { it.copy(accountBalance = balance) }
+        if (newValue.toIntOrNull() == null) return
+        val balance = if (newValue.startsWith("0")) "" else newValue
+        _uiState.update { it.copy(displayedAccountBalance = balance) }
     }
 
     fun onAddAccountClick(onAddSuccess: () -> Unit) {
@@ -69,7 +65,7 @@ class AddAccountViewModel @Inject constructor(
             //add account
             val isAccountAdded = accountRepository.addAccount(
                 accountName = uiState.value.accountName,
-                accountBalance = uiState.value.accountBalance
+                accountBalance = uiState.value.displayedAccountBalance.currencyStringToBigDecimal()
             )
 
             withContext(Dispatchers.Main) {
@@ -86,11 +82,13 @@ class AddAccountViewModel @Inject constructor(
                     delay(4000)
                     onAddSuccess()
                 } else
-                    _uiState.update { it.copy(
-                        isAddInProgress = false,
-                        isAddError = true,
-                        errorMessage = "Unknown error occurred when adding account."
-                    ) }
+                    _uiState.update {
+                        it.copy(
+                            isAddInProgress = false,
+                            isAddError = true,
+                            errorMessage = "Unknown error occurred when adding account."
+                        )
+                    }
             }
         }
     }

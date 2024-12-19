@@ -24,7 +24,7 @@ interface UserDao {
     fun getUserLastBudgetId(username: String): Flow<Int>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insert(user: User): Long //OnConflictStrategy.ABORT: SQLiteConstraintException of username exists
+    suspend fun insert(user: User): Long //OnConflictStrategy.ABORT: SQLiteConstraintException of username exists, returns the id of the added record
 
     @Update
     suspend fun update(user: User): Int //returns number of rows updated

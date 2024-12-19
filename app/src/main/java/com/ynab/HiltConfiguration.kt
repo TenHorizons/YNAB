@@ -11,6 +11,8 @@ import com.ynab.data.repository.AccountRepository
 import com.ynab.data.repository.AccountRepositoryImpl
 import com.ynab.data.repository.UserRepository
 import com.ynab.data.repository.UserRepositoryImpl
+import com.ynab.domain.AddTransactionUseCase
+import com.ynab.domain.AddTransactionUseCaseImpl
 import com.ynab.domain.BasicAuthUseCase
 import com.ynab.domain.BasicAuthUseCaseImpl
 import com.ynab.domain.LoadAppUseCase
@@ -45,6 +47,9 @@ abstract class HiltBindings {
 
     @Binds
     abstract fun bindLocalAccountDataSource(impl: RoomLocalAccountDataSource): LocalAccountDataSource
+
+    @Binds
+    abstract fun bindAddTransactionUseCase(impl: AddTransactionUseCaseImpl): AddTransactionUseCase
 }
 
 @Module

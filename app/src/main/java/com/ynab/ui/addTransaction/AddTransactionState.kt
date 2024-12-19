@@ -1,0 +1,17 @@
+package com.ynab.ui.addTransaction
+
+import com.ynab.ui.shared.UNASSIGNED_TRANSACTION_ID
+import java.time.LocalDate
+
+data class AddTransactionState(
+    val isSwitchGreen:Boolean = true,
+    val displayedAmount: String = "",
+    val selectedAccountId: Int? = null,
+    val selectedBudgetId: Int = UNASSIGNED_TRANSACTION_ID,
+    val selectedDate:LocalDate = LocalDate.now(),
+    val memoText: String = "",
+    val isError: Boolean = false,
+    val errorMessage: String = "",
+    val isAddInProgress: Boolean = false,
+    val isAdded: Boolean = false
+)
