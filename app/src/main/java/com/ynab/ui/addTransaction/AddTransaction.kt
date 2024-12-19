@@ -23,6 +23,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -56,9 +57,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.data.repository.dataClass.Account
 import com.ynab.ui.shared.CurrencyAmountInputVisualTransformation
 import com.ynab.ui.shared.LIGHT_GREEN
-import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,18 +114,45 @@ fun AddTransaction(
                 horizontalArrangement = Arrangement.End
             ) {
                 Spacer(modifier = Modifier.weight(1f))
-                Button(
-                    onClick = {
-                        keyboardController?.hide()
-                        vm.onAddTransaction()
-                    }
-                ) {
-                    if (uiState.isAddInProgress) {
-                        CircularProgressIndicator()
-                    } else {
+                if (uiState.isAddInProgress) {
+                    CircularProgressIndicator()
+                } else {
+                    Button(
+                        onClick = {
+                            keyboardController?.hide()
+                            vm.onAddTransaction()
+                        }
+                    ) {
                         Text(text = "Add Transaction")
                     }
                 }
+            }
+            if (uiState.isError || uiState.isAddSuccess) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Card(
+                        colors =
+                        CardDefaults.cardColors(
+                            containerColor =
+                            if (uiState.isError) colorScheme.errorContainer
+                            else LIGHT_GREEN
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text =
+                                if (uiState.isError) uiState.errorMessage
+                                else "Transaction Added!"
+                            )
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -191,7 +219,7 @@ fun TransactionInfo(
     uiState: AddTransactionState,
     accounts: List<Account>,
     onAccountSelected: (Int) -> Unit,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate?) -> Unit
 ) {
 
     Column {
@@ -205,7 +233,8 @@ fun TransactionInfo(
             onSelectedChange = { selectedAccountName ->
                 onAccountSelected(
                     accounts.first {
-                        it.accountName == selectedAccountName }
+                        it.accountName == selectedAccountName
+                    }
                         .accountId)
             },
             options = accounts.map { it.accountName }
@@ -309,22 +338,29 @@ fun Memo(memoText: String, onTextChanged: (String) -> Unit) {
 @Composable
 fun AddTransactionDatePicker(
     uiState: AddTransactionState,
-    onDateSelected: (LocalDate) -> Unit
+    onDateSelected: (LocalDate?) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
-    fun getSelectedDate(): LocalDate =
-        Instant.ofEpochMilli(datePickerState.selectedDateMillis!!)
-            .atZone(ZoneId.systemDefault())
-            .toLocalDate()
+    fun getSelectedDate(): LocalDate? =
+        if (datePickerState.selectedDateMillis == null) null
+        else
+            Date(datePickerState.selectedDateMillis!!)
+                .toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
 
     TextField(
-        modifier = Modifier.wrapContentWidth().clickable { expanded = true },
+        modifier = Modifier
+            .wrapContentWidth()
+            .clickable { expanded = true },
         /*need enabled = false for clickable() to work:
          https://stackoverflow.com/questions/67902919/jetpack-compose-textfield-clickable-does-not-work*/
         enabled = false,
         readOnly = true,
-        value = uiState.selectedDate.toString(),
+        value =
+        if (uiState.selectedDate == null) "No date selected"
+        else uiState.selectedDate.toString(),
         onValueChange = {/*no action here, since read only.*/ },
         trailingIcon = {
             ExposedDropdownMenuDefaults.TrailingIcon(

@@ -22,7 +22,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -30,11 +29,11 @@ import androidx.navigation.toRoute
 import com.ynab.ui.accounts.Accounts
 import com.ynab.ui.addAccount.AddAccount
 import com.ynab.ui.addTransaction.AddTransaction
-import com.ynab.ui.theme.YNABTheme
 import com.ynab.ui.login.Login
 import com.ynab.ui.register.Register
 import com.ynab.ui.settings.Settings
 import com.ynab.ui.splash.Splash
+import com.ynab.ui.theme.YNABTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 const val TAG_PREFIX = "YNAB_"

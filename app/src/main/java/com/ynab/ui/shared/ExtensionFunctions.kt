@@ -22,5 +22,5 @@ fun String.currencyStringToBigDecimal(): BigDecimal {
         else
             this.dropLast(2) + "." + this.takeLast(2)
     }
-    return balanceAsString.toBigDecimal(mathContext = MathContext(2, RoundingMode.HALF_UP))
+    return BigDecimal(balanceAsString).setScale(2, RoundingMode.HALF_UP)
 }

@@ -1,13 +1,9 @@
-package com.ynab.domain
+package com.ynab.data.dataSource
 
-import com.ynab.data.repository.dataClass.Account
-import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
 
-interface AddTransactionUseCase {
-    val accounts: Flow<List<Account>>
-
+interface LocalTransactionDataSource {
     fun addTransaction(
         amount: BigDecimal,
         accountId: Int,
@@ -15,4 +11,5 @@ interface AddTransactionUseCase {
         date: LocalDate,
         memo: String
     ): Boolean
+
 }

@@ -51,3 +51,9 @@ interface AccountDao {
     @Delete
     fun delete(account: Account)
 }
+
+@Dao
+interface TransactionDao {
+    @Insert
+    fun insert(transaction:Transaction): Long // returns the id of the added record
+}
