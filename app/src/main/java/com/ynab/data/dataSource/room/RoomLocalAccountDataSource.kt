@@ -47,7 +47,7 @@ class RoomLocalAccountDataSource @Inject constructor(
             )
             return false
         } catch (e: Exception) {
-            Log.e(TAG, "Unknown error at addAccount: ${e.stackTraceToString()}")
+            Log.d(TAG, "Unknown error at addAccount: ${e.stackTraceToString()}")
             return false
         }
     }
@@ -61,7 +61,7 @@ class RoomLocalAccountDataSource @Inject constructor(
             Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
             return false
         } catch (e: Exception) {
-            Log.e(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
+            Log.d(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
             return false
         }
     }
@@ -76,7 +76,7 @@ class RoomLocalAccountDataSource @Inject constructor(
             Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
             return null
         } catch (e: Exception) {
-            Log.e(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
+            Log.d(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
             return null
         }
     }

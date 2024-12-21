@@ -31,7 +31,7 @@ class TransactionRepositoryImpl @Inject constructor(
                 memo = memo
             )
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at addTransaction: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at addTransaction: ${e.stackTrace}")
             throw e
         }
     }
@@ -40,7 +40,7 @@ class TransactionRepositoryImpl @Inject constructor(
         try{
             return transactionDs.getTransactionsByAccountId(accountId)
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
             throw e
         }
     }
@@ -49,7 +49,7 @@ class TransactionRepositoryImpl @Inject constructor(
         try{
             return transactionDs.getTransactionsByAccountIdList(accountIdList)
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
             throw e
         }
     }

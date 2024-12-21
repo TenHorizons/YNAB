@@ -37,13 +37,10 @@ class RoomLocalTransactionDataSource @Inject constructor(
             transactionDao.insert(newTransaction)
             return true
         } catch (e: SQLiteConstraintException) {
-            Log.d(
-                TAG,
-                "addTransaction threw SQLiteConstraintException."
-            )
+            Log.d(TAG, "addTransaction threw SQLiteConstraintException.")
             return false
         } catch (e: Exception) {
-            Log.e(TAG, "Unknown error at addTransaction: ${e.stackTraceToString()}")
+            Log.d(TAG, "Unknown error at addTransaction: ${e.stackTraceToString()}")
             return false
         }
     }
@@ -57,7 +54,7 @@ class RoomLocalTransactionDataSource @Inject constructor(
             Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
             return emptyFlow()
         } catch (e: Exception) {
-            Log.e(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
+            Log.d(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
             return emptyFlow()
         }
     }
@@ -71,7 +68,7 @@ class RoomLocalTransactionDataSource @Inject constructor(
             Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
             return emptyFlow()
         } catch (e: Exception) {
-            Log.e(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
+            Log.d(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
             return emptyFlow()
         }
     }

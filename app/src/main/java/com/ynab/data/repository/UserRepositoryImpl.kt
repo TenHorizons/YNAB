@@ -25,7 +25,7 @@ class UserRepositoryImpl @Inject constructor(
         try {
             return userDs.addUser(username, password)
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at addUser: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at addUser: ${e.stackTrace}")
             throw e
         }
     }
