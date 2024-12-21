@@ -53,9 +53,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ynab.data.repository.dataClass.Account
 import com.ynab.ui.shared.displayTwoDecimal
 import com.ynab.ui.shared.isLessThanZero
+import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +63,7 @@ fun Accounts(
     modifier: Modifier = Modifier,
     vm: AccountsViewModel = hiltViewModel(),
     bottomNavBar: @Composable () -> Unit,
-    onAccountClicked: (Account) -> Unit = {},
+    onAccountClicked: (DisplayedAccount) -> Unit = {},
     onAllTransactionsClicked: () -> Unit = {},
     onAddAccountClicked: () -> Unit = {}
 ) {
@@ -121,7 +121,8 @@ fun Accounts(
                 item {
                     Text(
                         text = "Long press accounts for more options.",
-                        color = TextFieldDefaults.colors().disabledTextColor)
+                        color = TextFieldDefaults.colors().disabledTextColor
+                    )
                 }
                 items(accounts.sortedBy { it.uiPosition }) {
                     Account(
@@ -163,12 +164,13 @@ fun AllTransactions(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Account(
-    account: Account,
+    account: DisplayedAccount,
     onAccountClick: () -> Unit,
     onEditAccountNameClick: () -> Unit,
     onDeleteAccountClick: () -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
+    val balance by account.balance.collectAsStateWithLifecycle(initialValue = BigDecimal.ZERO)
 
     Box(
         modifier = Modifier
@@ -194,11 +196,11 @@ fun Account(
                 Spacer(Modifier.weight(1f))
                 Column {
                     Text("Balance:")
+                    val prefix =
+                        if (balance.isLessThanZero()) "-RM"
+                        else "RM"
                     Text(
-                        text =
-                        (if (account.balance.isLessThanZero()) "-RM"
-                        else "RM") +
-                                "${account.balance.displayTwoDecimal().abs()}"
+                        text = prefix + balance.displayTwoDecimal().abs()
                     )
                 }
                 Spacer(Modifier.padding(horizontal = 8.dp))

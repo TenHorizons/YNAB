@@ -67,4 +67,6 @@ interface TransactionDao {
     fun insert(transaction:Transaction): Long // returns the id of the added record
     @Update
     fun update(transaction: Transaction): Int //returns number of rows updated
+    @Delete
+    fun delete(transaction: Transaction)
 }

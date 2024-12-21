@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.AccountRepository
+import com.ynab.data.repository.TransactionRepository
 import com.ynab.data.repository.dataClass.Account
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -18,14 +21,29 @@ private const val TAG = "${TAG_PREFIX}AccountsViewModel"
 
 @HiltViewModel
 class AccountsViewModel @Inject constructor(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
-    val accounts = accountRepository.accounts
+
+    val accounts: Flow<List<DisplayedAccount>> = accountRepository.accounts.map { accountList ->
+        accountList.map { account ->
+            val balance =
+                transactionRepository.getTransactionsByAccountId(account.accountId).map { transactionList ->
+                    transactionList.map { it.amount }.reduce { acc, value -> acc.plus(value) }
+                }
+            DisplayedAccount(
+                accountId = account.accountId,
+                accountName = account.accountName,
+                uiPosition = account.uiPosition,
+                budgetId = account.budgetId,
+                balance = balance)
+        }
+    }
 
     private val _uiState = MutableStateFlow(AccountsState())
     val uiState: StateFlow<AccountsState> = _uiState
 
-    fun onOpenDialog(account: Account) =
+    fun onOpenDialog(account: DisplayedAccount) =
         _uiState.update {
             it.copy(
                 isDialogOpen = true,
@@ -65,7 +83,7 @@ class AccountsViewModel @Inject constructor(
             else {
                 val isEditSuccess =
                     accountRepository.updateAccountName(
-                        uiState.value.accountToEdit!!,
+                        uiState.value.accountToEdit!!.toAccount(),
                         uiState.value.editAccountText
                     )
                 if (isEditSuccess)
@@ -93,9 +111,16 @@ class AccountsViewModel @Inject constructor(
         }
     }
 
-    fun deleteAccount(account: Account) {
+    fun deleteAccount(displayedAccount: DisplayedAccount) {
         viewModelScope.launch(Dispatchers.IO) {
-            accountRepository.deleteAccount(account)
+            accountRepository.deleteAccount(displayedAccount.toAccount())
         }
     }
+
+    private fun DisplayedAccount.toAccount(): Account = Account(
+        accountId = accountId,
+        accountName = accountName,
+        uiPosition = uiPosition,
+        budgetId = budgetId
+    )
 }

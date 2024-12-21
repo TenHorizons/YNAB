@@ -71,4 +71,13 @@ class TransactionRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
+    override fun deleteTransaction(transactionId: Int): Boolean {
+        try{
+            return transactionDs.deleteTransaction(transactionId)
+        }catch (e: Exception) {
+            Log.d(TAG, "An unknown error occurred at deleteTransaction: ${e.stackTrace}")
+            throw e
+        }
+    }
 }

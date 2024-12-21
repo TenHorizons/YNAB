@@ -92,6 +92,20 @@ class RoomLocalTransactionDataSource @Inject constructor(
         return false
     }
 
+    override fun deleteTransaction(transactionId: Int): Boolean {
+        try {
+            val transactionToDelete =
+                transactionDao.getTransactionById(transactionId) ?: return false
+            transactionDao.delete(transactionToDelete)
+            return true
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "updateTransaction threw SQLiteConstraintException.")
+        } catch (e: Exception) {
+            Log.d(TAG, "Unknown error at deleteTransaction: ${e.stackTraceToString()}")
+        }
+        return false
+    }
+
     private fun com.ynab.data.dataSource.room.Transaction.toUiTransaction(): Transaction =
         Transaction(
             transactionId = transactionId,

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,7 +28,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -59,12 +59,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.data.repository.dataClass.Account
-import com.ynab.ui.addTransaction.AddTransactionState
-import com.ynab.ui.addTransaction.AddTransactionViewModel
 import com.ynab.ui.shared.CurrencyAmountInputVisualTransformation
 import com.ynab.ui.shared.LIGHT_GREEN
-import com.ynab.ui.transactions.NO_ACC_ERR
-import com.ynab.ui.transactions.TransactionsViewModel
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
@@ -101,6 +97,14 @@ fun Transaction(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { vm.deleteTransaction(onDeleteSuccess = onBackPressed) }) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Transaction"
                         )
                     }
                 }

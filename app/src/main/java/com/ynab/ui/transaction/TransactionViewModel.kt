@@ -145,4 +145,29 @@ class TransactionViewModel @AssistedInject constructor(
             }
         }
     }
+
+    fun deleteTransaction(onDeleteSuccess: () -> Unit) {
+        _uiState.update {
+            it.copy(
+                isError = false,
+                errorMessage = "",
+                isUpdateInProgress = true
+            )
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            val isDeleteSuccess = transactionRepository.deleteTransaction(transactionId)
+            withContext(Dispatchers.Main) {
+                if (isDeleteSuccess)
+                    onDeleteSuccess()
+                else
+                    _uiState.update {
+                        it.copy(
+                            isUpdateInProgress = false,
+                            isError = true,
+                            errorMessage = "Unknown error occurred when deleting transaction."
+                        )
+                    }
+            }
+        }
+    }
 }

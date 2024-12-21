@@ -36,4 +36,7 @@ class TransactionDataSource @Inject constructor(
     fun updateTransaction(transaction: Transaction): Boolean =
         localTransactionDataSource.updateTransaction(transaction)
 
+    fun deleteTransaction(transactionId: Int): Boolean =
+        localTransactionDataSource.deleteTransaction(transactionId)
+
 }

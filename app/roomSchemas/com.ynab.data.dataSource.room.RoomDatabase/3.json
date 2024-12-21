@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "b14ec76a000750c9d0837d89bc73724f",
+    "identityHash": "9f1bbf9e2b2c58cccf110c803b52a07a",
     "entities": [
       {
         "tableName": "User",
@@ -54,7 +54,7 @@
       },
       {
         "tableName": "Account",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `budgetId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `uiPosition` INTEGER NOT NULL, `balance` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`accountId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `budgetId` INTEGER NOT NULL, `accountName` TEXT NOT NULL, `uiPosition` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "accountId",
@@ -78,12 +78,6 @@
             "fieldPath": "uiPosition",
             "columnName": "uiPosition",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "balance",
-            "columnName": "balance",
-            "affinity": "TEXT",
             "notNull": true
           }
         ],
@@ -182,7 +176,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b14ec76a000750c9d0837d89bc73724f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9f1bbf9e2b2c58cccf110c803b52a07a')"
     ]
   }
 }

@@ -1,7 +1,6 @@
 package com.ynab.ui.transaction
 
 import com.ynab.data.repository.dataClass.Account
-import com.ynab.data.repository.dataClass.Transaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import java.time.LocalDate

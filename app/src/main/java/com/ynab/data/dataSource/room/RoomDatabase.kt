@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
         Account::class,
         Transaction::class
     ],
-    version = 3
+    version = 4
 )
 @TypeConverters(Converter::class)
 abstract class RoomDatabase : RoomDatabase() {
