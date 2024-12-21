@@ -56,6 +56,15 @@ class AccountRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getAccount(accountId: Int): Account? {
+        try{
+            return accountDs.getAccountById(accountId)
+        }catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred at getAccount: ${e.stackTrace}")
+            throw e
+        }
+    }
+
     override fun saveAllData() {
         TODO("Not yet implemented")
     }

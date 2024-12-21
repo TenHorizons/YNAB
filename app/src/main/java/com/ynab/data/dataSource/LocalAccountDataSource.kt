@@ -10,5 +10,6 @@ interface LocalAccountDataSource {
     fun addAccount(accountName: String, accountBalance: BigDecimal, budgetId: Int): Boolean
     fun updateAccount(accountToEdit: Account, newAccountName: String): Boolean
     fun deleteAccount(account: Account)
+    fun getAccountById(accountId: Int): Account?
 
 }

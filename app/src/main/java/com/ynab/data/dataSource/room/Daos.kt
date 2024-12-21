@@ -41,6 +41,8 @@ interface AccountDao {
     fun isAccountNameExist(accountName: String, budgetId: Int): Boolean
     @Query("select count(*) from account where budgetId = :budgetId")
     fun getNumberOfAccountsByBudgetId(budgetId: Int): Int
+    @Query("select * from account where accountId = :accountId")
+    fun getAccountById(accountId: Int): Account?
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(account: Account): Long // returns the id of the added record
@@ -54,6 +56,11 @@ interface AccountDao {
 
 @Dao
 interface TransactionDao {
+    @Query("select * from `transaction` where accountId = :accountId")
+    fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>>
+    @Query("select * from `transaction` where accountId in (:accountIdList)")
+    fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>>
+
     @Insert
     fun insert(transaction:Transaction): Long // returns the id of the added record
 }

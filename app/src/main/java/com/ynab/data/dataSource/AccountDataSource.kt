@@ -23,4 +23,7 @@ class AccountDataSource @Inject constructor(
 
     fun deleteAccount(account: Account) =
         localAccountDataSource.deleteAccount(account)
+
+    fun getAccountById(accountId: Int): Account? =
+        localAccountDataSource.getAccountById(accountId)
 }

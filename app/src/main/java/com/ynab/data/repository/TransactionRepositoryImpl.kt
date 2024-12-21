@@ -3,7 +3,8 @@ package com.ynab.data.repository
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.TransactionDataSource
-import kotlinx.coroutines.flow.first
+import com.ynab.data.repository.dataClass.Transaction
+import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.inject.Inject
@@ -31,6 +32,24 @@ class TransactionRepositoryImpl @Inject constructor(
             )
         }catch (e: Exception) {
             Log.e(TAG, "An unknown error occurred at addTransaction: ${e.stackTrace}")
+            throw e
+        }
+    }
+
+    override fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>> {
+        try{
+            return transactionDs.getTransactionsByAccountId(accountId)
+        }catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
+            throw e
+        }
+    }
+
+    override fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> {
+        try{
+            return transactionDs.getTransactionsByAccountIdList(accountIdList)
+        }catch (e: Exception) {
+            Log.e(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
             throw e
         }
     }

@@ -31,7 +31,7 @@ data object AddTransaction
 data object Accounts
 
 @Serializable
-data class Account(val accountId: Int)
+data class Transactions(val isAllTransactions: Boolean, val accountId: Int)
 
 @Serializable
 data class Transaction(val transactionId: Int)

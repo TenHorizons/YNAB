@@ -69,6 +69,18 @@ class RoomLocalAccountDataSource @Inject constructor(
     override fun deleteAccount(account: Account) =
         accountDao.delete(account.toRoomAccount())
 
+    override fun getAccountById(accountId: Int): Account? {
+        try {
+            return accountDao.getAccountById(accountId)?.toUiAccount()
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
+            return null
+        } catch (e: Exception) {
+            Log.e(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
+            return null
+        }
+    }
+
     private fun com.ynab.data.dataSource.room.Account.toUiAccount(): Account =
         Account(
             accountId = accountId,

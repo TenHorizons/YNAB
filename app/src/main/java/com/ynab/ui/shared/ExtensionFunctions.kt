@@ -1,7 +1,6 @@
 package com.ynab.ui.shared
 
 import java.math.BigDecimal
-import java.math.MathContext
 import java.math.RoundingMode
 
 fun BigDecimal.displayTwoDecimal(): BigDecimal =
@@ -23,4 +22,11 @@ fun String.currencyStringToBigDecimal(): BigDecimal {
             this.dropLast(2) + "." + this.takeLast(2)
     }
     return BigDecimal(balanceAsString).setScale(2, RoundingMode.HALF_UP)
+}
+
+fun BigDecimal.toCurrencyString(): String {
+    val prefix =
+        if (this.isLessThanZero()) "-RM"
+        else "RM"
+    return prefix + this.abs().displayTwoDecimal().toString()
 }
