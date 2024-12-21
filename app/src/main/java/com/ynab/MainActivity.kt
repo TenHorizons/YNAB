@@ -26,6 +26,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.ynab.ui.transactions.Transactions
 import com.ynab.ui.accounts.Accounts
 import com.ynab.ui.addAccount.AddAccount
 import com.ynab.ui.addTransaction.AddTransaction
@@ -118,7 +119,7 @@ fun Main(modifier: Modifier = Modifier) {
         composable<Splash> { backStackEntry ->
             Splash(
                 modifier = modifier,
-                isNewUser = (backStackEntry.toRoute() as Splash).isNewUser,
+                isNewUser = backStackEntry.toRoute<Splash>().isNewUser,
                 onStartupComplete = { navController.navigate(route = Settings) }
             )
         }
@@ -132,8 +133,12 @@ fun Main(modifier: Modifier = Modifier) {
             Accounts(
                 modifier = modifier,
                 bottomNavBar = bottomNavBar,
-                onAccountClicked = { Log.d(TAG, "Account ${it.accountName} clicked") },
-                onAllTransactionsClicked = { Log.d(TAG, "All transactions clicked") },
+                onAccountClicked = {
+                    navController.navigate(
+                        route = Transactions(isAllTransactions = false, accountId = it.accountId)) },
+                onAllTransactionsClicked = {
+                    navController.navigate(
+                        route = Transactions(isAllTransactions = true, accountId = -1)) },
                 onAddAccountClicked = { navController.navigate(route = AddAccount) }
             )
         }
@@ -147,6 +152,14 @@ fun Main(modifier: Modifier = Modifier) {
             AddTransaction(
                 modifier = modifier,
                 bottomNavBar = bottomNavBar
+            )
+        }
+        composable<Transactions> { backStackEntry ->
+            Transactions(
+                isAllTransactions = backStackEntry.toRoute<Transactions>().isAllTransactions,
+                accountId = backStackEntry.toRoute<Transactions>().accountId,
+                onBackPressed = { navController.popBackStack() },
+                onTransactionClick = { Log.d(TAG, "Transaction ID: $it clicked") }
             )
         }
     }

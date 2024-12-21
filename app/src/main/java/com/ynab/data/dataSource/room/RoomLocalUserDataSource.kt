@@ -29,7 +29,7 @@ class RoomLocalUserDataSource @Inject constructor(
             Log.d(TAG,"addUser threw SQLiteConstraintException, likely due to username already exist.")
             return false
         } catch (e: Exception){
-            Log.e(TAG,"Unknown error at addUser: ${e.stackTraceToString()}")
+            Log.d(TAG,"Unknown error at addUser: ${e.stackTraceToString()}")
             return false
         }
     }

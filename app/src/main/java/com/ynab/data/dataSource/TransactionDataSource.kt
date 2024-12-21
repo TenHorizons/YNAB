@@ -1,5 +1,7 @@
 package com.ynab.data.dataSource
 
+import com.ynab.data.repository.dataClass.Transaction
+import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.inject.Inject
@@ -21,5 +23,11 @@ class TransactionDataSource @Inject constructor(
             date = date,
             memo = memo
         )
+
+    fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>> =
+        localTransactionDataSource.getTransactionsByAccountId(accountId)
+
+    fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> =
+        localTransactionDataSource.getTransactionsByAccountIdList(accountIdList)
 
 }

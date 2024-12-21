@@ -11,4 +11,5 @@ interface AccountRepository: Repository {
     suspend fun addAccount(accountName: String, accountBalance: BigDecimal): Boolean
     suspend fun updateAccountName(accountToEdit: Account, newAccountName: String): Boolean
     fun deleteAccount(account: Account)
+    fun getAccount(accountId: Int): Account?
 }

@@ -32,7 +32,7 @@ class AccountRepositoryImpl @Inject constructor(
         try{
             return accountDs.addAccount(accountName, accountBalance, userRepository.getUserLastBudgetId().first())
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at addAccount: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at addAccount: ${e.stackTrace}")
             throw e
         }
     }
@@ -42,7 +42,7 @@ class AccountRepositoryImpl @Inject constructor(
         try{
             return accountDs.updateAccount(accountToEdit, newAccountName)
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at updateAccountName: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at updateAccountName: ${e.stackTrace}")
             throw e
         }
     }
@@ -51,7 +51,16 @@ class AccountRepositoryImpl @Inject constructor(
         try{
             return accountDs.deleteAccount(account)
         }catch (e: Exception) {
-            Log.e(TAG, "An unknown error occurred at deleteAccount: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at deleteAccount: ${e.stackTrace}")
+            throw e
+        }
+    }
+
+    override fun getAccount(accountId: Int): Account? {
+        try{
+            return accountDs.getAccountById(accountId)
+        }catch (e: Exception) {
+            Log.d(TAG, "An unknown error occurred at getAccount: ${e.stackTrace}")
             throw e
         }
     }
