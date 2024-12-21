@@ -10,13 +10,13 @@ Ready features include:
 - Accounts page for bank accounts, with add/delete/update account functionality
 - Add Transaction page
 - Transactions page under accounts for transactions per account and all transactions
+- Transaction page under transactions with transaction details. Allow update and delete transaction
 
 
 Planned features include
-1.  Transaction page under transactions with transaction details. Allow update and delete transaction.
-2.  Budget page with top bar month scroller, with updates from transactions, and ability to assign surplus income (default to only 1 budget).
-3.  Budget Item page with budget item details.
-4.  Goal page to set goal per budget item, with change reflected across relevant budget items across months. (Goal should be decoupled from budget item)
+1.  Budget page with top bar month scroller, with updates from transactions, and ability to assign surplus income (default to only 1 budget).
+2.  Budget Item page with budget item details.
+3.  Goal page to set goal per budget item, with change reflected across relevant budget items across months. (Goal should be decoupled from budget item)
 
 
 Far-future features include:
