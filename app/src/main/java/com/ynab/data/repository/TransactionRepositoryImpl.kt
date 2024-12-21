@@ -53,4 +53,22 @@ class TransactionRepositoryImpl @Inject constructor(
             throw e
         }
     }
+
+    override fun getTransaction(transactionId: Int): Transaction? {
+        try{
+            return transactionDs.getTransaction(transactionId)
+        }catch (e: Exception) {
+            Log.d(TAG, "An unknown error occurred at getTransaction: ${e.stackTrace}")
+            throw e
+        }
+    }
+
+    override fun updateTransaction(transaction: Transaction): Boolean {
+        try{
+            return transactionDs.updateTransaction(transaction)
+        }catch (e: Exception) {
+            Log.d(TAG, "An unknown error occurred at updateTransaction: ${e.stackTrace}")
+            throw e
+        }
+    }
 }

@@ -60,7 +60,11 @@ interface TransactionDao {
     fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>>
     @Query("select * from `transaction` where accountId in (:accountIdList)")
     fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>>
+    @Query("select * from `transaction` where transactionId = :transactionId")
+    fun getTransactionById(transactionId: Int): Transaction?
 
     @Insert
     fun insert(transaction:Transaction): Long // returns the id of the added record
+    @Update
+    fun update(transaction: Transaction): Int //returns number of rows updated
 }

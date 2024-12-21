@@ -77,7 +77,7 @@ fun Transactions(
                             contentDescription = "Back"
                         )
                     }
-                },
+                }
             )
         }
     ) { innerPadding ->

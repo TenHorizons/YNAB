@@ -35,6 +35,8 @@ import com.ynab.ui.register.Register
 import com.ynab.ui.settings.Settings
 import com.ynab.ui.splash.Splash
 import com.ynab.ui.theme.YNABTheme
+import com.ynab.ui.transaction.Transaction
+import com.ynab.ui.transactions.Transaction
 import dagger.hilt.android.AndroidEntryPoint
 
 const val TAG_PREFIX = "YNAB_"
@@ -159,7 +161,14 @@ fun Main(modifier: Modifier = Modifier) {
                 isAllTransactions = backStackEntry.toRoute<Transactions>().isAllTransactions,
                 accountId = backStackEntry.toRoute<Transactions>().accountId,
                 onBackPressed = { navController.popBackStack() },
-                onTransactionClick = { Log.d(TAG, "Transaction ID: $it clicked") }
+                onTransactionClick = { transactionId -> navController.navigate(route = Transaction(transactionId)) }
+            )
+        }
+        composable<Transaction> { backStackEntry ->
+            Transaction(
+                modifier = modifier,
+                transactionId = backStackEntry.toRoute<Transaction>().transactionId,
+                onBackPressed = { navController.popBackStack() }
             )
         }
     }

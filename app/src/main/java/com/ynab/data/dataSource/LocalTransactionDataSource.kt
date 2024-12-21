@@ -16,5 +16,7 @@ interface LocalTransactionDataSource {
 
     fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>>
     fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>>
+    fun getTransaction(transactionId: Int): Transaction?
+    fun updateTransaction(transaction: Transaction): Boolean
 
 }
