@@ -20,8 +20,7 @@ data class Account(
     @PrimaryKey(autoGenerate = true) val accountId: Int = 0,
     val budgetId: Int,
     var accountName: String,
-    var uiPosition: Int,
-    var balance: BigDecimal
+    var uiPosition: Int
 )
 
 @Entity(

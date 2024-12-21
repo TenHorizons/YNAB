@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.AccountRepository
+import com.ynab.data.repository.TransactionRepository
 import com.ynab.ui.shared.currencyStringToBigDecimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -13,13 +14,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}AddAccountViewModel"
 
 @HiltViewModel
 class AddAccountViewModel @Inject constructor(
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val transactionRepository: TransactionRepository
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(AddAccountState())
     val uiState: StateFlow<AddAccountState> = _uiState
@@ -63,13 +66,37 @@ class AddAccountViewModel @Inject constructor(
             }
 
             //add account
-            val isAccountAdded = accountRepository.addAccount(
-                accountName = uiState.value.accountName,
-                accountBalance = uiState.value.displayedAccountBalance.currencyStringToBigDecimal()
+            val addedAccountId = accountRepository.addAccount(
+                accountName = uiState.value.accountName
             )
+            if (addedAccountId == null)
+                withContext(Dispatchers.Main) {
+                    _uiState.update {
+                        it.copy(
+                            isAddInProgress = false,
+                            isAddError = true,
+                            errorMessage = "Unknown error occurred when adding account."
+                        )
+                    }
+                }
+
+            val initialBalance = uiState.value.displayedAccountBalance.currencyStringToBigDecimal()
+
+            val isAddInitialTransactionSuccess =
+                if (initialBalance.signum() == 0) true
+                else {
+
+                    transactionRepository.addTransaction(
+                        amount = initialBalance,
+                        accountId = addedAccountId!!.toInt(),
+                        budgetItemId = 0,
+                        date = LocalDate.now(),
+                        memo = "Initial balance."
+                    )
+                }
 
             withContext(Dispatchers.Main) {
-                if (isAccountAdded) {
+                if (isAddInitialTransactionSuccess) {
                     _uiState.update {
                         it.copy(
                             isAddInProgress = false,
@@ -86,7 +113,7 @@ class AddAccountViewModel @Inject constructor(
                         it.copy(
                             isAddInProgress = false,
                             isAddError = true,
-                            errorMessage = "Unknown error occurred when adding account."
+                            errorMessage = "Account added. Unknown error occurred when adding transaction for initial balance."
                         )
                     }
             }

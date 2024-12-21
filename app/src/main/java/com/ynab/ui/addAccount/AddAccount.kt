@@ -85,7 +85,7 @@ fun AddAccount(
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Account Balance:",
+                text = "Initial Account Balance:",
                 fontSize = MaterialTheme.typography.titleLarge.fontSize
             )
             TextField(

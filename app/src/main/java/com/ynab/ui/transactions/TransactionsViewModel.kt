@@ -22,8 +22,8 @@ import kotlinx.coroutines.withContext
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = TransactionsViewModel.TransactionsViewModelFactory::class)
 class TransactionsViewModel @AssistedInject constructor(
-    @Assisted val isAllTransactions: Boolean,
-    @Assisted val accountId: Int,
+    @Assisted private val isAllTransactions: Boolean,
+    @Assisted private val accountId: Int,
     private val transactionRepository: TransactionRepository,
     private val accountRepository: AccountRepository
 ) : ViewModel() {
@@ -67,11 +67,4 @@ class TransactionsViewModel @AssistedInject constructor(
             }
         }
     }
-
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    private fun getTransactionsByBudgetId(): Flow<List<Transaction>> {
-//        return accountRepository.accounts.flatMapLatest { accounts ->
-//            transactionRepository.getTransactionsByAccountIdList(accounts.map { it.accountId })
-//        }
-//    }
 }

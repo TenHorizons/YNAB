@@ -8,7 +8,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
-import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}AccountRepositoryImpl"
@@ -27,10 +26,10 @@ class AccountRepositoryImpl @Inject constructor(
     override suspend fun isAccountNameExist(accountName: String): Boolean =
         accountDs.isAccountNameExist(accountName, userRepository.getUserLastBudgetId().first())
 
-    override suspend fun addAccount(accountName: String, accountBalance: BigDecimal): Boolean {
-        if(isAccountNameExist(accountName)) return false
+    override suspend fun addAccount(accountName: String): Long? {
+        if(isAccountNameExist(accountName)) return null
         try{
-            return accountDs.addAccount(accountName, accountBalance, userRepository.getUserLastBudgetId().first())
+            return accountDs.addAccount(accountName, userRepository.getUserLastBudgetId().first())
         }catch (e: Exception) {
             Log.d(TAG, "An unknown error occurred at addAccount: ${e.stackTrace}")
             throw e

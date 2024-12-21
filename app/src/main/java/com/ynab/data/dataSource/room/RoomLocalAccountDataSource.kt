@@ -7,7 +7,6 @@ import com.ynab.data.dataSource.LocalAccountDataSource
 import com.ynab.data.repository.dataClass.Account
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.math.BigDecimal
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}RoomLocalAccountDataSource"
@@ -28,27 +27,24 @@ class RoomLocalAccountDataSource @Inject constructor(
 
     override fun addAccount(
         accountName: String,
-        accountBalance: BigDecimal,
         budgetId: Int
-    ): Boolean {
+    ): Long? {
         try {
             val newAccount = Account(
                 budgetId = budgetId,
                 accountName = accountName,
-                uiPosition = accountDao.getNumberOfAccountsByBudgetId(budgetId),
-                balance = accountBalance
+                uiPosition = accountDao.getNumberOfAccountsByBudgetId(budgetId)
             )
-            accountDao.insert(newAccount)
-            return true
+            return accountDao.insert(newAccount)
         } catch (e: SQLiteConstraintException) {
             Log.d(
                 TAG,
                 "addAccount threw SQLiteConstraintException, likely due to account already exist."
             )
-            return false
+            return null
         } catch (e: Exception) {
             Log.d(TAG, "Unknown error at addAccount: ${e.stackTraceToString()}")
-            return false
+            return null
         }
     }
 
@@ -86,8 +82,7 @@ class RoomLocalAccountDataSource @Inject constructor(
             accountId = accountId,
             budgetId = budgetId,
             accountName = accountName,
-            uiPosition = uiPosition,
-            balance = balance
+            uiPosition = uiPosition
         )
 
     private fun Account.toRoomAccount(): com.ynab.data.dataSource.room.Account =
@@ -95,7 +90,6 @@ class RoomLocalAccountDataSource @Inject constructor(
             accountId = accountId,
             budgetId = budgetId,
             accountName = accountName,
-            uiPosition = uiPosition,
-            balance = balance
+            uiPosition = uiPosition
         )
 }

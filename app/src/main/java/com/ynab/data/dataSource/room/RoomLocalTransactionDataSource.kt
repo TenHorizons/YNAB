@@ -38,11 +38,10 @@ class RoomLocalTransactionDataSource @Inject constructor(
             return true
         } catch (e: SQLiteConstraintException) {
             Log.d(TAG, "addTransaction threw SQLiteConstraintException.")
-            return false
         } catch (e: Exception) {
             Log.d(TAG, "Unknown error at addTransaction: ${e.stackTraceToString()}")
-            return false
         }
+        return false
     }
 
     override fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>> {
@@ -51,12 +50,11 @@ class RoomLocalTransactionDataSource @Inject constructor(
                 transactions.map { roomTransaction -> roomTransaction.toUiTransaction() }
             }
         } catch (e: SQLiteConstraintException) {
-            Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
-            return emptyFlow()
+            Log.d(TAG, "getTransactionsByAccountId threw SQLiteConstraintException.")
         } catch (e: Exception) {
-            Log.d(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
-            return emptyFlow()
+            Log.d(TAG, "Unknown error at getTransactionsByAccountId: ${e.stackTraceToString()}")
         }
+        return emptyFlow()
     }
 
     override fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> {
@@ -66,11 +64,46 @@ class RoomLocalTransactionDataSource @Inject constructor(
             }
         } catch (e: SQLiteConstraintException) {
             Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
-            return emptyFlow()
         } catch (e: Exception) {
-            Log.d(TAG, "Unknown error at updateAccount: ${e.stackTraceToString()}")
-            return emptyFlow()
+            Log.d(TAG, "Unknown error at getTransactionsByAccountIdList: ${e.stackTraceToString()}")
         }
+        return emptyFlow()
+    }
+
+    override fun getTransaction(transactionId: Int): Transaction? {
+        try {
+            return transactionDao.getTransactionById(transactionId)?.toUiTransaction()
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "getTransaction threw SQLiteConstraintException.")
+        } catch (e: Exception) {
+            Log.d(TAG, "Unknown error at getTransaction: ${e.stackTraceToString()}")
+        }
+        return null
+    }
+
+    override fun updateTransaction(transaction: Transaction): Boolean {
+        try {
+            return transactionDao.update(transaction.toRoomTransaction()) > 0
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "updateTransaction threw SQLiteConstraintException.")
+        } catch (e: Exception) {
+            Log.d(TAG, "Unknown error at updateTransaction: ${e.stackTraceToString()}")
+        }
+        return false
+    }
+
+    override fun deleteTransaction(transactionId: Int): Boolean {
+        try {
+            val transactionToDelete =
+                transactionDao.getTransactionById(transactionId) ?: return false
+            transactionDao.delete(transactionToDelete)
+            return true
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "updateTransaction threw SQLiteConstraintException.")
+        } catch (e: Exception) {
+            Log.d(TAG, "Unknown error at deleteTransaction: ${e.stackTraceToString()}")
+        }
+        return false
     }
 
     private fun com.ynab.data.dataSource.room.Transaction.toUiTransaction(): Transaction =

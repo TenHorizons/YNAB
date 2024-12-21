@@ -30,4 +30,13 @@ class TransactionDataSource @Inject constructor(
     fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> =
         localTransactionDataSource.getTransactionsByAccountIdList(accountIdList)
 
+    fun getTransaction(transactionId: Int): Transaction? =
+        localTransactionDataSource.getTransaction(transactionId)
+
+    fun updateTransaction(transaction: Transaction): Boolean =
+        localTransactionDataSource.updateTransaction(transaction)
+
+    fun deleteTransaction(transactionId: Int): Boolean =
+        localTransactionDataSource.deleteTransaction(transactionId)
+
 }

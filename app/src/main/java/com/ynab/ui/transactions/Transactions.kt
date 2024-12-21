@@ -77,7 +77,7 @@ fun Transactions(
                             contentDescription = "Back"
                         )
                     }
-                },
+                }
             )
         }
     ) { innerPadding ->
@@ -100,7 +100,7 @@ fun Transactions(
         else
             LazyColumn(
                 modifier = modifier.padding(innerPadding),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 item {
@@ -136,10 +136,10 @@ fun Transaction(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(16.dp,8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
+            Column{
                 Text(
                     text =
                     if (uiState.isAllTransactions)
@@ -148,17 +148,21 @@ fun Transaction(
                         uiState.account?.accountName ?: NO_ACC_ERR,
                     fontSize = typography.bodySmall.fontSize
                 )
-                Spacer(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .weight(1f)
-                )
+                Spacer(modifier = Modifier.weight(1f))
                 Text(
                     text = transaction.date.toString(),
                     fontSize = typography.bodyLarge.fontSize
                 )
             }
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.weight(0.09f))
+            Text(
+                modifier = Modifier.weight(0.9f),
+                text = transaction.memo,
+                fontSize = typography.bodySmall.fontSize,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.weight(0.01f))
             Text(
                 text = transaction.amount.toCurrencyString(),
                 fontSize = typography.titleLarge.fontSize

@@ -1,7 +1,6 @@
 package com.ynab
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -26,7 +25,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
-import com.ynab.ui.transactions.Transactions
 import com.ynab.ui.accounts.Accounts
 import com.ynab.ui.addAccount.AddAccount
 import com.ynab.ui.addTransaction.AddTransaction
@@ -35,6 +33,8 @@ import com.ynab.ui.register.Register
 import com.ynab.ui.settings.Settings
 import com.ynab.ui.splash.Splash
 import com.ynab.ui.theme.YNABTheme
+import com.ynab.ui.transaction.Transaction
+import com.ynab.ui.transactions.Transactions
 import dagger.hilt.android.AndroidEntryPoint
 
 const val TAG_PREFIX = "YNAB_"
@@ -159,7 +159,14 @@ fun Main(modifier: Modifier = Modifier) {
                 isAllTransactions = backStackEntry.toRoute<Transactions>().isAllTransactions,
                 accountId = backStackEntry.toRoute<Transactions>().accountId,
                 onBackPressed = { navController.popBackStack() },
-                onTransactionClick = { Log.d(TAG, "Transaction ID: $it clicked") }
+                onTransactionClick = { transactionId -> navController.navigate(route = Transaction(transactionId)) }
+            )
+        }
+        composable<Transaction> { backStackEntry ->
+            Transaction(
+                modifier = modifier,
+                transactionId = backStackEntry.toRoute<Transaction>().transactionId,
+                onBackPressed = { navController.popBackStack() }
             )
         }
     }

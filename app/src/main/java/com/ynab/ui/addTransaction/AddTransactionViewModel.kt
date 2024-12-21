@@ -20,7 +20,7 @@ private const val TAG = "${TAG_PREFIX}AddTransactionViewModel"
 @HiltViewModel
 class AddTransactionViewModel @Inject constructor(
     private val addTransactionUseCase: AddTransactionUseCase
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(AddTransactionState())
 
     val uiState: StateFlow<AddTransactionState> = _uiState
@@ -30,9 +30,8 @@ class AddTransactionViewModel @Inject constructor(
         _uiState.update { it.copy(isSwitchGreen = value) }
 
     fun onAmountChanged(value: String) {
-        if(value.toIntOrNull() == null) return
-        else
-            _uiState.update { it.copy(displayedAmount = value) }
+        if (value.toIntOrNull() == null) return
+        else _uiState.update { it.copy(displayedAmount = value) }
     }
 
     fun onAccountChange(value: Int) =
@@ -54,23 +53,26 @@ class AddTransactionViewModel @Inject constructor(
                 "Please select a date."
             else -> ""
         }
-        if(errorMessage != "") {
+        if (errorMessage != "") {
             _uiState.update { it.copy(isError = true, errorMessage = errorMessage) }
             return
         }
 
         val amount =
-            if (uiState.value.isSwitchGreen) uiState.value.displayedAmount.currencyStringToBigDecimal()
-        else
-            uiState.value.displayedAmount.currencyStringToBigDecimal().negate()
+            if (uiState.value.isSwitchGreen)
+                uiState.value.displayedAmount.currencyStringToBigDecimal()
+            else
+                uiState.value.displayedAmount.currencyStringToBigDecimal().negate()
 
-        _uiState.update { it.copy(
-            isError = false,
-            errorMessage = "",
-            isAddInProgress = true
-        )}
+        _uiState.update {
+            it.copy(
+                isError = false,
+                errorMessage = "",
+                isAddInProgress = true
+            )
+        }
 
-        viewModelScope.launch (Dispatchers.IO) {
+        viewModelScope.launch(Dispatchers.IO) {
             val isAddSuccess = addTransactionUseCase.addTransaction(
                 amount = amount,
                 accountId = uiState.value.selectedAccountId!!,
@@ -82,14 +84,16 @@ class AddTransactionViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 if (isAddSuccess)
                     _uiState.update {
-                        it.copy(isAddInProgress = false, isAddSuccess = true) }
+                        it.copy(isAddInProgress = false, isAddSuccess = true)
+                    }
                 else
                     _uiState.update {
                         it.copy(
                             isAddInProgress = false,
                             isError = true,
                             errorMessage = "Unknown error occurred when adding transaction."
-                        ) }
+                        )
+                    }
             }
         }
     }
