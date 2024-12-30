@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.math.BigDecimal
 import java.time.LocalDate
 
 @HiltViewModel(assistedFactory = TransactionViewModel.TransactionViewModelFactory::class)
