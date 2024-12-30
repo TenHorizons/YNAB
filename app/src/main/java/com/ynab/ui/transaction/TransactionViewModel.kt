@@ -6,6 +6,7 @@ import com.ynab.data.repository.AccountRepository
 import com.ynab.data.repository.TransactionRepository
 import com.ynab.data.repository.dataClass.Transaction
 import com.ynab.ui.shared.currencyStringToBigDecimal
+import com.ynab.ui.shared.toDisplayedString
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -44,15 +45,8 @@ class TransactionViewModel @AssistedInject constructor(
                         it.copy(
                             accounts = accounts,
                             isSwitchGreen = transaction.amount.signum() == 1,
-                            //Multiply by 100 to remove decimals. e.g. 20.20 to 2020.
-                            //abs() and setScale(0) so it doesn't result as -2020.00.
-                            //This is for text field visual transformation.
-                            displayedAmount =
-                            transaction.amount
-                                .abs()
-                                .multiply(BigDecimal("100"))
-                                .setScale(0)
-                                .toPlainString(),
+
+                            displayedAmount = transaction.amount.toDisplayedString(),
                             selectedAccountId = transaction.accountId,
                             selectedDate = transaction.date,
                             displayedMemo = transaction.memo

@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Entity(indices = [Index(value = ["username"], unique = true)])
 data class User(
@@ -36,6 +37,33 @@ data class Transaction(
     var amount: BigDecimal,
     var date: LocalDate,
     var memo: String
+)
+
+@Entity(indices = [Index(value = ["username", "budgetName"], unique = true)])
+data class Budget(
+    @PrimaryKey(autoGenerate = true) val budgetId: Int = 0,
+    val userId: Int,
+    var budgetName: String,
+    var uiPosition: Int
+)
+
+@Entity(indices = [Index(value = ["budgetId", "categoryName"], unique = true)])
+data class Category(
+    @PrimaryKey(autoGenerate = true) val categoryId: Int = 0,
+    val budgetId: Int,
+    var categoryName: String,
+    var categoryUiPosition: Int
+)
+
+@Entity(indices = [Index(value = ["categoryId", "yearMonth", "budgetItemName"], unique = true)])
+data class BudgetItem(
+    @PrimaryKey(autoGenerate = true) val budgetItemId: Int = 0,
+    var categoryId: Int,
+    var budgetItemName: String,
+    var itemUiPosition: Int,
+    var yearMonth: YearMonth,
+    var assigned: BigDecimal,
+    var rolloverBalance: BigDecimal
 )
 
 class Converter {

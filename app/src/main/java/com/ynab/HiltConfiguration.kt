@@ -19,6 +19,8 @@ import com.ynab.domain.AddTransactionUseCase
 import com.ynab.domain.AddTransactionUseCaseImpl
 import com.ynab.domain.BasicAuthUseCase
 import com.ynab.domain.BasicAuthUseCaseImpl
+import com.ynab.domain.BudgetUseCase
+import com.ynab.domain.FakeBudgetUseCaseImpl
 import com.ynab.domain.LoadAppUseCase
 import com.ynab.domain.LoadAppUseCaseImpl
 import dagger.Binds
@@ -60,6 +62,9 @@ abstract class HiltBindings {
 
     @Binds
     abstract fun bindLocalTransactionDataSource(impl: RoomLocalTransactionDataSource): LocalTransactionDataSource
+
+    @Binds
+    abstract fun bindBudgetUseCase(impl: FakeBudgetUseCaseImpl): BudgetUseCase
 }
 
 @Module
