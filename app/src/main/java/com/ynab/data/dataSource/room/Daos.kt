@@ -70,3 +70,17 @@ interface TransactionDao {
     @Delete
     fun delete(transaction: Transaction)
 }
+
+@Dao
+interface BudgetItemDao {
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insert(budgetItems: List<BudgetItem>)
+}
+
+@Dao
+interface CategoryDao {
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    fun insert(budgetItems: List<Category>)
+    @Query("select categoryId from category where categoryName = :categoryName and budgetId = :budgetId")
+    fun getCategoryId(categoryName: String, budgetId: Int): Int
+}

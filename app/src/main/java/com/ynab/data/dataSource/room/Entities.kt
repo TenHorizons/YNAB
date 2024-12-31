@@ -74,8 +74,17 @@ class Converter {
     fun toBigDecimal(value: String): BigDecimal = value.toBigDecimal()
 
     @TypeConverter
-    fun toLocalDate(value: LocalDate): String = value.toString()
+    fun fromLocalDate(value: LocalDate): String = value.toString()
 
     @TypeConverter
     fun toLocalDate(value: String): LocalDate = LocalDate.parse(value)
+
+    @TypeConverter
+    fun fromYearMonth(value: YearMonth): String = value.toString()
+
+    @TypeConverter
+    fun toYearMonth(value: String): YearMonth {
+        val parts = value.split("-")
+        return YearMonth.of(parts[0].toInt(), parts[1].toInt())
+    }
 }

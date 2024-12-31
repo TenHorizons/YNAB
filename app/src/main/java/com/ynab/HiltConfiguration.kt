@@ -3,14 +3,22 @@ package com.ynab
 import android.content.Context
 import androidx.room.Room
 import com.ynab.data.dataSource.LocalAccountDataSource
+import com.ynab.data.dataSource.LocalBudgetItemDataSource
+import com.ynab.data.dataSource.LocalCategoryDataSource
 import com.ynab.data.dataSource.LocalTransactionDataSource
 import com.ynab.data.dataSource.LocalUserDataSource
 import com.ynab.data.dataSource.room.RoomLocalAccountDataSource
 import com.ynab.data.dataSource.room.RoomDatabase
+import com.ynab.data.dataSource.room.RoomLocalBudgetItemDataSource
+import com.ynab.data.dataSource.room.RoomLocalCategoryDataSource
 import com.ynab.data.dataSource.room.RoomLocalTransactionDataSource
 import com.ynab.data.dataSource.room.RoomLocalUserDataSource
 import com.ynab.data.repository.AccountRepository
 import com.ynab.data.repository.AccountRepositoryImpl
+import com.ynab.data.repository.BudgetItemRepository
+import com.ynab.data.repository.BudgetItemRepositoryImpl
+import com.ynab.data.repository.CategoryRepository
+import com.ynab.data.repository.CategoryRepositoryImpl
 import com.ynab.data.repository.TransactionRepository
 import com.ynab.data.repository.TransactionRepositoryImpl
 import com.ynab.data.repository.UserRepository
@@ -65,6 +73,18 @@ abstract class HiltBindings {
 
     @Binds
     abstract fun bindBudgetUseCase(impl: FakeBudgetUseCaseImpl): BudgetUseCase
+
+    @Binds
+    abstract fun bindCategoryRepository(impl: CategoryRepositoryImpl): CategoryRepository
+
+    @Binds
+    abstract fun bindBudgetItemRepository(impl: BudgetItemRepositoryImpl): BudgetItemRepository
+
+    @Binds
+    abstract fun bindLocalCategoryDataSource(impl: RoomLocalCategoryDataSource): LocalCategoryDataSource
+
+    @Binds
+    abstract fun bindLocalBudgetItemDataSource(impl: RoomLocalBudgetItemDataSource): LocalBudgetItemDataSource
 }
 
 @Module
