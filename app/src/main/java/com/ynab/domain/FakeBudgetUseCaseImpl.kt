@@ -1,6 +1,7 @@
 package com.ynab.domain
 
 import com.ynab.data.repository.dataClass.BudgetItem
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Category
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -90,8 +91,7 @@ class FakeBudgetUseCaseImpl @Inject constructor(): BudgetUseCase {
     }
 
     override fun getBudgetItems(
-        categoryIds: List<Int>,
-        yearMonth: YearMonth
+        categoryIds: List<Int>
     ): Flow<List<BudgetItem>> = flow {
         while (true) {
             emit(budgetItemNames.map { budgetItemName ->
@@ -104,7 +104,23 @@ class FakeBudgetUseCaseImpl @Inject constructor(): BudgetUseCase {
                     budgetItemId = budgetItemIndex,
                     categoryId = categoryIndex,
                     budgetItemName = budgetItemName,
-                    itemUiPosition = budgetItemPosition,
+                    itemUiPosition = budgetItemPosition
+                )
+            })
+            delay(5000)
+        }
+    }
+
+    override fun getBudgetItemEntries(
+        map: List<Int>,
+        yearMonth: YearMonth
+    ): Flow<List<BudgetItemEntry>> = flow {
+        while (true) {
+            emit(budgetItemNames.map { budgetItemName ->
+                val budgetItemIndex: Int = budgetItemNames.indexOf(budgetItemName)
+                BudgetItemEntry(
+                    budgetItemEntryId = budgetItemIndex,
+                    budgetItemId = budgetItemIndex,
                     yearMonth = YearMonth.now(),
                     assigned = BigDecimal.ZERO,
                     rolloverBalance = BigDecimal.ZERO

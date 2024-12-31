@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.data.repository.dataClass.BudgetItem
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Category
 import com.ynab.ui.shared.LIGHT_GREEN
 import com.ynab.ui.shared.LIGHT_RED
@@ -56,6 +57,7 @@ import com.ynab.ui.shared.toCurrencyString
 import com.ynab.ui.shared.toDisplayedString
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
+import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +70,7 @@ fun Budget(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val categories by uiState.categories.collectAsStateWithLifecycle(initialValue = listOf())
     val budgetItems by uiState.budgetItems.collectAsStateWithLifecycle(initialValue = listOf())
+    val budgetItemEntries by uiState.budgetItemEntries.collectAsStateWithLifecycle(initialValue = listOf())
 
     Scaffold(
         modifier = modifier,
@@ -75,6 +78,7 @@ fun Budget(
             TopAppBar(
                 title = {
                     Text(
+                        //TODO enhance to support different months.
                         text = "BudgetTop Bar, to enhance.",
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
@@ -94,7 +98,7 @@ fun Budget(
     ) { innerPadding ->
         LazyColumn(
             modifier = modifier.padding(innerPadding),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
@@ -107,16 +111,24 @@ fun Budget(
                 }
                 Category(
                     category = category,
-                    totalAssigned = budgetItems.sumOf { it.assigned },
+                    //TODO hardcode to YearMonth.now() before enhance to support different months.
+                    totalAssigned = budgetItemEntries
+                        .filter { it.yearMonth == YearMonth.now() }
+                        .sumOf { it.assigned },
                     totalAvailable = vm.getTotalAvailable(category),
                     budgetItems = categoryBudgetItems,
                     budgetItemComposable = { budgetItem ->
+                        val budgetItemEntry = budgetItemEntries.first {
+                            it.yearMonth == YearMonth.now() && it.budgetItemId == budgetItem.budgetItemId
+                        }
                         BudgetItem(
                             budgetItem = budgetItem,
+                            //TODO hardcode to YearMonth.now() before enhance to support different months.
+                            budgetItemEntry = budgetItemEntry,
                             available = vm.getAvailable(budgetItem),
                             onBudgetItemClicked = { onBudgetItemClicked(budgetItem.budgetItemId) },
                             onAssignedChange = { newValue ->
-                                vm.onAssignedChange(budgetItem, newValue)
+                                vm.onAssignedChange(budgetItemEntry, newValue)
                             }
                         )
                         if (categoryBudgetItems.last() != budgetItem) HorizontalDivider()
@@ -140,9 +152,11 @@ fun Available(
             else LIGHT_GREEN,
         )
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start
@@ -255,14 +269,15 @@ fun Category(
 @Composable
 fun BudgetItem(
     budgetItem: BudgetItem,
+    budgetItemEntry: BudgetItemEntry,
     available: Flow<BigDecimal>,
     onBudgetItemClicked: () -> Unit,
     onAssignedChange: (String) -> Unit
 ) {
     val prefix =
-        if (budgetItem.assigned.isLessThanZero()) "-"
+        if (budgetItemEntry.assigned.isLessThanZero()) "-"
         else ""
-    val displayedAssignedAmount = prefix + budgetItem.assigned.toDisplayedString()
+    val displayedAssignedAmount = prefix + budgetItemEntry.assigned.toDisplayedString()
     val budgetItemAvailable by available.collectAsStateWithLifecycle(initialValue = BigDecimal.ZERO)
     Card {
         Row(
@@ -288,28 +303,28 @@ fun BudgetItem(
                 onValueChange = onAssignedChange
             )
             //Keeping non-custom text field in case custom not working well
-/*            TextField(
-                modifier = Modifier.weight(0.25f),
-                textStyle = TextStyle.Default.copy(
-                    fontSize = typography.bodyMedium.fontSize,
-                    textAlign = TextAlign.Center
-                ),
-                value = displayedAssignedAmount,
-                singleLine = true,
-                onValueChange = onAssignedChange,
-                visualTransformation = BudgetItemInputVisualTransformation(),
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Transparent,
-                    unfocusedIndicatorColor = Transparent,
-                    disabledIndicatorColor = Transparent,
-                ),
-                keyboardOptions =
-                KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
-            )*/
+            /*            TextField(
+                            modifier = Modifier.weight(0.25f),
+                            textStyle = TextStyle.Default.copy(
+                                fontSize = typography.bodyMedium.fontSize,
+                                textAlign = TextAlign.Center
+                            ),
+                            value = displayedAssignedAmount,
+                            singleLine = true,
+                            onValueChange = onAssignedChange,
+                            visualTransformation = BudgetItemInputVisualTransformation(),
+                            colors = TextFieldDefaults.colors(
+                                focusedIndicatorColor = Transparent,
+                                unfocusedIndicatorColor = Transparent,
+                                disabledIndicatorColor = Transparent,
+                            ),
+                            keyboardOptions =
+                            KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
+                        )*/
             Column(
                 modifier = Modifier.weight(0.3f),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 Card(
                     colors = CardDefaults.cardColors(
                         containerColor =
@@ -322,7 +337,7 @@ fun BudgetItem(
                     shape = RoundedCornerShape(16.dp)
                 ) {
                     Column(
-                        modifier = Modifier.padding(8.dp,2.dp),
+                        modifier = Modifier.padding(8.dp, 2.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(

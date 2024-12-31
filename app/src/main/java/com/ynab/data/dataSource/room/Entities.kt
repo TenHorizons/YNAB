@@ -55,12 +55,18 @@ data class Category(
     var categoryUiPosition: Int
 )
 
-@Entity(indices = [Index(value = ["categoryId", "yearMonth", "budgetItemName"], unique = true)])
+@Entity(indices = [Index(value = ["categoryId", "budgetItemName"], unique = true)])
 data class BudgetItem(
     @PrimaryKey(autoGenerate = true) val budgetItemId: Int = 0,
     var categoryId: Int,
     var budgetItemName: String,
-    var itemUiPosition: Int,
+    var itemUiPosition: Int
+)
+
+@Entity(indices = [Index(value = ["budgetItemId","yearMonth"], unique = true)])
+data class BudgetItemEntry(
+    @PrimaryKey(autoGenerate = true) val budgetItemEntryId: Int = 0,
+    var budgetItemId: Int,
     var yearMonth: YearMonth,
     var assigned: BigDecimal,
     var rolloverBalance: BigDecimal

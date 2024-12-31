@@ -2,6 +2,7 @@ package com.ynab.domain
 
 import android.util.Log
 import com.ynab.TAG_PREFIX
+import com.ynab.data.repository.BudgetItemEntryRepository
 import com.ynab.data.repository.BudgetItemRepository
 import com.ynab.data.repository.CategoryRepository
 import com.ynab.data.repository.dataClass.TutorialCard
@@ -12,7 +13,8 @@ private const val TAG = "${TAG_PREFIX}LoadAppUseCaseImpl"
 
 class LoadAppUseCaseImpl @Inject constructor(
     private val categoryRepository: CategoryRepository,
-    private val budgetItemRepository: BudgetItemRepository
+    private val budgetItemRepository: BudgetItemRepository,
+    private val budgetItemEntryRepository: BudgetItemEntryRepository
 ): LoadAppUseCase {
 
     override suspend fun generateNewUserData(): Exception? {
@@ -20,11 +22,18 @@ class LoadAppUseCaseImpl @Inject constructor(
             categoryRepository.addCategories(categoryNames = categoryToItemNamesMap.keys, budgetId = 0)
             categoryToItemNamesMap.map { (categoryName, budgetItemNames) ->
                 val categoryId: Int = categoryRepository.getCategoryId(categoryName = categoryName, budgetId = 0)
-                budgetItemRepository.addAll(
+                budgetItemRepository.addBudgetItems(
                     categoryId = categoryId,
                     budgetItemNames = budgetItemNames,
                     yearMonth = YearMonth.now()
                 )
+                budgetItemNames.map { budgetItemName ->
+                    val budgetItemId: Int = budgetItemRepository.getBudgetItemId(budgetItemName = budgetItemName, categoryId = categoryId)
+                    budgetItemEntryRepository.addBudgetItemEntry(
+                        budgetItemId = budgetItemId,
+                        yearMonth = YearMonth.now()
+                    )
+                }
             }
             return null
         } catch (e: Exception) {

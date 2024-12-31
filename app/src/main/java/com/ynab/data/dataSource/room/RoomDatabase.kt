@@ -10,9 +10,10 @@ import androidx.room.TypeConverters
         Account::class,
         Transaction::class,
         BudgetItem::class,
-        Category::class
+        Category::class,
+        BudgetItemEntry::class
     ],
-    version = 5
+    version = 6
 )
 @TypeConverters(Converter::class)
 abstract class RoomDatabase : RoomDatabase() {
@@ -21,4 +22,5 @@ abstract class RoomDatabase : RoomDatabase() {
     abstract fun transactionDao(): TransactionDao
     abstract fun budgetItemDao(): BudgetItemDao
     abstract fun categoryDao(): CategoryDao
+    abstract fun budgetItemEntryDao(): BudgetItemEntryDao
 }

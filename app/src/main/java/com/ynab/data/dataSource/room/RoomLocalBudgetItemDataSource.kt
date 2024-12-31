@@ -24,10 +24,7 @@ class RoomLocalBudgetItemDataSource @Inject constructor(
             BudgetItem(
                 categoryId = categoryId,
                 budgetItemName = name,
-                itemUiPosition = budgetItemNames.indexOf(name),
-                yearMonth = yearMonth,
-                assigned = BigDecimal.ZERO,
-                rolloverBalance = BigDecimal.ZERO
+                itemUiPosition = budgetItemNames.indexOf(name)
             )
         }
         try {
@@ -44,4 +41,8 @@ class RoomLocalBudgetItemDataSource @Inject constructor(
             return e
         }
     }
+
+    /**Get budget item ID based on name and category ID.*/
+    override fun getBudgetItemId(budgetItemName: String, categoryId: Int): Int =
+        budgetItemDao.getBudgetItemId(budgetItemName, categoryId)
 }

@@ -75,6 +75,8 @@ interface TransactionDao {
 interface BudgetItemDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(budgetItems: List<BudgetItem>)
+    @Query("select budgetItemId from budgetItem where budgetItemName = :budgetItemName and categoryId = :categoryId")
+    fun getBudgetItemId(budgetItemName: String, categoryId: Int): Int
 }
 
 @Dao
@@ -83,4 +85,10 @@ interface CategoryDao {
     fun insert(budgetItems: List<Category>)
     @Query("select categoryId from category where categoryName = :categoryName and budgetId = :budgetId")
     fun getCategoryId(categoryName: String, budgetId: Int): Int
+}
+
+@Dao
+interface BudgetItemEntryDao {
+    @Insert
+    fun insert(budgetItemEntry: BudgetItemEntry)
 }

@@ -1,6 +1,7 @@
 package com.ynab.domain
 
 import com.ynab.data.repository.dataClass.BudgetItem
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Category
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
@@ -17,9 +18,16 @@ class BudgetUseCaseImpl @Inject constructor(
 
     /** Get Budget Items for a YearMonth of a list of Categories.*/
     override fun getBudgetItems(
-        categoryIds: List<Int>,
-        yearMonth: YearMonth
+        categoryIds: List<Int>
     ): Flow<List<BudgetItem>> {
+        TODO("Not yet implemented")
+    }
+
+    /** Get Budget Item Entries for a YearMonth of a list of Budget Items.*/
+    override fun getBudgetItemEntries(
+        map: List<Int>,
+        yearMonth: YearMonth
+    ): Flow<List<BudgetItemEntry>> {
         TODO("Not yet implemented")
     }
 

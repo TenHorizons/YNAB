@@ -3,6 +3,7 @@ package com.ynab.ui.budget
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ynab.data.repository.dataClass.BudgetItem
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Category
 import com.ynab.domain.BudgetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,14 +33,18 @@ class BudgetViewModel @Inject constructor(
             val categories: Flow<List<Category>> =
                 budgetUseCase.getBudgetCategories()
             val budgetItems: Flow<List<BudgetItem>> = categories.flatMapLatest { categoryList ->
-                //hardcode to YearMonth.now() before enhance to support different months.
-                budgetUseCase.getBudgetItems(categoryList.map { it.categoryId }, YearMonth.now())
+                budgetUseCase.getBudgetItems(categoryList.map { it.categoryId })
+            }
+            //TODO hardcode to YearMonth.now() before enhance to support different months.
+            val budgetItemEntries: Flow<List<BudgetItemEntry>> = budgetItems.flatMapLatest { budgetItemList ->
+                budgetUseCase.getBudgetItemEntries(budgetItemList.map { it.budgetItemId }, YearMonth.now())
             }
 
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(
                     categories = categories,
-                    budgetItems = budgetItems
+                    budgetItems = budgetItems,
+                    budgetItemEntries = budgetItemEntries
                 ) }
             }
         }
@@ -54,7 +59,7 @@ class BudgetViewModel @Inject constructor(
     fun getAvailable(budgetItem: BudgetItem): Flow<BigDecimal> =
         budgetUseCase.getAvailable(budgetItem)
 
-    fun onAssignedChange(budgetItem: BudgetItem, newValue: String) {
+    fun onAssignedChange(budgetItem: BudgetItemEntry, newValue: String) {
 //        val value = newValue.toBigDecimalOrNull()
 //
 //        if (value == null) return
