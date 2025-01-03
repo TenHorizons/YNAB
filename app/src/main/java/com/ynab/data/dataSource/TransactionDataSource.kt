@@ -1,9 +1,11 @@
 package com.ynab.data.dataSource
 
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 class TransactionDataSource @Inject constructor(
@@ -39,4 +41,9 @@ class TransactionDataSource @Inject constructor(
     fun deleteTransaction(transactionId: Int): Boolean =
         localTransactionDataSource.deleteTransaction(transactionId)
 
+    fun getTransactions(yearMonth: YearMonth): Flow<List<Transaction>> =
+        localTransactionDataSource.getTransactions(yearMonth)
+
+    fun getTransactions(budgetItemEntry: BudgetItemEntry): Flow<List<Transaction>> =
+        localTransactionDataSource.getTransactions(budgetItemEntry)
 }

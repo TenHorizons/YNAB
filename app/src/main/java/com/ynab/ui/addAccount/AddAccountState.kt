@@ -1,7 +1,5 @@
 package com.ynab.ui.addAccount
 
-import java.math.BigDecimal
-
 data class AddAccountState(
     val accountName:String="",
     val displayedAccountBalance: String = "",

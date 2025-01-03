@@ -33,11 +33,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.data.repository.dataClass.Account
+import com.ynab.data.repository.dataClass.BudgetItem
 import com.ynab.data.repository.dataClass.Transaction
+import com.ynab.ui.shared.UNASSIGNED_TRANSACTION
 import com.ynab.ui.shared.toCurrencyString
 
 
-val NO_ACC_ERR = "NO_ACCOUNT_ERR"
+const val NO_ACC_ERR = "NO_ACCOUNT_ERR"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,6 +57,7 @@ fun Transactions(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val transactions by uiState.transactions.collectAsStateWithLifecycle(initialValue = emptyList())
     val accounts by uiState.accountList.collectAsStateWithLifecycle(initialValue = emptyList())
+    val budgetItems by uiState.budgetItems.collectAsStateWithLifecycle(initialValue = listOf())
 
     Scaffold(
         modifier = modifier,
@@ -109,10 +112,11 @@ fun Transactions(
                         color = TextFieldDefaults.colors().disabledTextColor
                     )
                 }
-                items(transactions.sortedBy { it.date }) {
+                items(transactions.sortedByDescending { it.date }) {
                     Transaction(
                         uiState = uiState,
                         accounts = accounts,
+                        budgetItems = budgetItems,
                         transaction = it,
                         onTransactionClick = { onTransactionClick(it.transactionId) }
                     )
@@ -125,6 +129,7 @@ fun Transactions(
 fun Transaction(
     uiState: TransactionsState,
     accounts: List<Account>,
+    budgetItems: List<BudgetItem>,
     transaction: Transaction,
     onTransactionClick: () -> Unit
 ) {
@@ -136,10 +141,10 @@ fun Transaction(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp,8.dp),
+                .padding(16.dp, 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column{
+            Column {
                 Text(
                     text =
                     if (uiState.isAllTransactions)
@@ -148,7 +153,18 @@ fun Transaction(
                         uiState.account?.accountName ?: NO_ACC_ERR,
                     fontSize = typography.bodySmall.fontSize
                 )
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(0.5f))
+                Text(
+                    text =
+                    if (transaction.budgetItemId == UNASSIGNED_TRANSACTION)
+                        "Unassigned"
+                    else
+                        budgetItems.firstOrNull {
+                            it.budgetItemId == transaction.budgetItemId
+                        }?.budgetItemName ?: "Budget_Item_Not_Found",
+                    fontSize = typography.bodySmall.fontSize
+                )
+                Spacer(modifier = Modifier.weight(0.5f))
                 Text(
                     text = transaction.date.toString(),
                     fontSize = typography.bodyLarge.fontSize
