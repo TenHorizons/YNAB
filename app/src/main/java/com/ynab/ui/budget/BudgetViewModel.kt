@@ -12,7 +12,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,12 +31,10 @@ class BudgetViewModel @Inject constructor(
             val lastSelectedYearMonth = budgetUseCase.lastSelectedYearMonth
             val categories: Flow<List<Category>> =
                 budgetUseCase.getBudgetCategories()
-            val budgetItems: Flow<List<BudgetItem>> = categories.flatMapLatest { categoryList ->
-                budgetUseCase.getBudgetItems(categoryList.map { it.categoryId })
-            }
-            val budgetItemEntries: Flow<List<BudgetItemEntry>> = budgetItems.flatMapLatest { budgetItemList ->
-                budgetUseCase.getThisYearMonthBudgetItemEntries(budgetItemList.map { it.budgetItemId })
-            }
+            val budgetItems: Flow<List<BudgetItem>> =
+                budgetUseCase.getBudgetItems()
+            val budgetItemEntries: Flow<List<BudgetItemEntry>> =
+                budgetUseCase.getThisYearMonthBudgetItemEntries()
             val yearMonthAvailable: Flow<BigDecimal> =
                 budgetUseCase.getYearMonthAvailable()
             val categoryAvailable: Flow<Map<Int, BigDecimal>> =

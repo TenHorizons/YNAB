@@ -3,7 +3,11 @@ package com.ynab.ui.transaction
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ynab.data.repository.AccountRepository
+import com.ynab.data.repository.BudgetItemRepository
+import com.ynab.data.repository.CategoryRepository
 import com.ynab.data.repository.TransactionRepository
+import com.ynab.data.repository.UserRepository
+import com.ynab.data.repository.dataClass.BudgetItem
 import com.ynab.data.repository.dataClass.Transaction
 import com.ynab.ui.shared.currencyStringToBigDecimal
 import com.ynab.ui.shared.toDisplayedString
@@ -12,17 +16,24 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = TransactionViewModel.TransactionViewModelFactory::class)
 class TransactionViewModel @AssistedInject constructor(
     @Assisted private val transactionId: Int,
     private val accountRepository: AccountRepository,
+    private val userRepository: UserRepository,
+    private val categoryRepository: CategoryRepository,
+    private val budgetItemRepository: BudgetItemRepository,
     private val transactionRepository: TransactionRepository
 ) : ViewModel() {
 
@@ -38,14 +49,21 @@ class TransactionViewModel @AssistedInject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val accounts = accountRepository.accounts
             val transaction = transactionRepository.getTransaction(transactionId)
+            val budgetItems: Flow<List<BudgetItem>> =
+                userRepository.getUserLastBudgetId().flatMapLatest { budgetId ->
+                    categoryRepository.getCategories(budgetId).flatMapLatest { categories ->
+                        budgetItemRepository.getBudgetItems(categories.map { it.categoryId })
+                    }
+                }
             withContext(Dispatchers.Main) {
                 if (transaction != null)
                     _uiState.update {
                         it.copy(
                             accounts = accounts,
+                            budgetItems = budgetItems,
                             isSwitchGreen = transaction.amount.signum() == 1,
-
                             displayedAmount = transaction.amount.toDisplayedString(),
+                            selectedBudgetItemId = transaction.budgetItemId,
                             selectedAccountId = transaction.accountId,
                             selectedDate = transaction.date,
                             displayedMemo = transaction.memo
@@ -71,6 +89,9 @@ class TransactionViewModel @AssistedInject constructor(
 
     fun onAccountChange(value: Int) =
         _uiState.update { it.copy(selectedAccountId = value) }
+
+    fun onBudgetItemSelected(selectedBudgetItemId: Int) =
+        _uiState.update { it.copy(selectedBudgetItemId = selectedBudgetItemId) }
 
     fun onDateSelected(value: LocalDate?) =
         _uiState.update { it.copy(selectedDate = value) }
@@ -115,7 +136,7 @@ class TransactionViewModel @AssistedInject constructor(
                 Transaction(
                     transactionId = transactionId,
                     accountId = uiState.value.selectedAccountId!!,
-                    budgetItemId = 0,
+                    budgetItemId = uiState.value.selectedBudgetItemId,
                     date = uiState.value.selectedDate!!,
                     amount = amount,
                     memo = uiState.value.displayedMemo

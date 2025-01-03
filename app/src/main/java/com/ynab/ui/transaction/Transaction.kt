@@ -59,8 +59,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.data.repository.dataClass.Account
+import com.ynab.data.repository.dataClass.BudgetItem
 import com.ynab.ui.shared.CurrencyAmountInputVisualTransformation
 import com.ynab.ui.shared.LIGHT_GREEN
+import com.ynab.ui.shared.UNASSIGNED_TRANSACTION
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.Date
@@ -78,6 +80,7 @@ fun Transaction(
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val accounts by uiState.accounts.collectAsStateWithLifecycle(initialValue = listOf())
+    val budgetItems by uiState.budgetItems.collectAsStateWithLifecycle(initialValue = listOf())
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -120,8 +123,11 @@ fun Transaction(
             Card(modifier = Modifier.padding(8.dp)) {
                 TransactionInfo(
                     uiState = uiState,
-                    accounts = accounts,
+                    accounts = accounts.sortedBy { it.uiPosition },
+                    budgetItems = budgetItems
+                        .sortedWith(compareBy(BudgetItem::categoryId, BudgetItem::itemUiPosition)),
                     onAccountSelected = vm::onAccountChange,
+                    onBudgetItemSelected = vm::onBudgetItemSelected,
                     onDateSelected = vm::onDateSelected
                 )
             }
@@ -241,9 +247,15 @@ fun AmountRow(
 fun TransactionInfo(
     uiState: TransactionState,
     accounts: List<Account>,
+    budgetItems: List<BudgetItem>,
     onAccountSelected: (Int) -> Unit,
+    onBudgetItemSelected: (Int) -> Unit,
     onDateSelected: (LocalDate?) -> Unit
 ) {
+    val budgetItemNames = budgetItems
+        .sortedWith(compareBy(BudgetItem::categoryId, BudgetItem::itemUiPosition))
+        .map { it.budgetItemName }
+    val budgetItemOptions = listOf("Unassigned") + budgetItemNames
 
     Column {
         TransactionInfoItemWithMenu(
@@ -261,6 +273,25 @@ fun TransactionInfo(
                 )
             },
             options = accounts.map { it.accountName }
+        )
+        HorizontalDivider()
+        TransactionInfoItemWithMenu(
+            title = "Assign to",
+            selectedOption =
+            if (uiState.selectedBudgetItemId == UNASSIGNED_TRANSACTION)
+                "Unassigned"
+            else
+                budgetItems.firstOrNull { it.budgetItemId == uiState.selectedBudgetItemId }?.budgetItemName
+                    ?: "",
+            onSelectedChange = {
+                val selectedBudgetItemId =
+                    if (it == "Unassigned")
+                        UNASSIGNED_TRANSACTION
+                    else
+                        budgetItems.first { item -> item.budgetItemName == it }.budgetItemId
+                onBudgetItemSelected(selectedBudgetItemId)
+            },
+            options = budgetItemOptions
         )
         HorizontalDivider()
         Row(

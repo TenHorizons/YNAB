@@ -2,9 +2,11 @@ package com.ynab.ui.transactions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.AccountRepository
 import com.ynab.data.repository.TransactionRepository
 import com.ynab.data.repository.dataClass.Account
+import com.ynab.domain.BudgetUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -19,11 +21,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+private const val TAG = "${TAG_PREFIX}TransactionsViewModel"
+
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = TransactionsViewModel.TransactionsViewModelFactory::class)
 class TransactionsViewModel @AssistedInject constructor(
     @Assisted private val isAllTransactions: Boolean,
     @Assisted private val accountId: Int,
+    private val budgetUseCase: BudgetUseCase,
     private val transactionRepository: TransactionRepository,
     private val accountRepository: AccountRepository
 ) : ViewModel() {
@@ -60,6 +65,7 @@ class TransactionsViewModel @AssistedInject constructor(
                     it.copy(
                         isAllTransactions = isAllTransactions,
                         account = account,
+                        budgetItems = budgetUseCase.getBudgetItems(),
                         accountList = accountList,
                         transactions = transactions
                     )

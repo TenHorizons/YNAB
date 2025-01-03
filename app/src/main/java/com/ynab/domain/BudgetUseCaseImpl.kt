@@ -63,10 +63,10 @@ class BudgetUseCaseImpl @Inject constructor(
     override fun getBudgetCategories(): Flow<List<Category>> = categories
 
     /** Get Budget Items for a list of Categories.*/
-    override fun getBudgetItems(categoryIds: List<Int>): Flow<List<BudgetItem>> = budgetItems
+    override fun getBudgetItems(): Flow<List<BudgetItem>> = budgetItems
 
     /** Get Budget Item Entries for a YearMonth of a list of Budget Items.*/
-    override fun getThisYearMonthBudgetItemEntries(budgetItemIds: List<Int>): Flow<List<BudgetItemEntry>> =
+    override fun getThisYearMonthBudgetItemEntries(): Flow<List<BudgetItemEntry>> =
         budgetItemEntries
 
     private fun getBudgetItemEntries(

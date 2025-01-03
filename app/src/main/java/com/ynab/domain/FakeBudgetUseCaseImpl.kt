@@ -90,9 +90,7 @@ class FakeBudgetUseCaseImpl @Inject constructor(override var lastSelectedYearMon
         }
     }
 
-    override fun getBudgetItems(
-        categoryIds: List<Int>
-    ): Flow<List<BudgetItem>> = flow {
+    override fun getBudgetItems(): Flow<List<BudgetItem>> = flow {
         while (true) {
             emit(budgetItemNames.map { budgetItemName ->
                 val budgetItemIndex: Int = budgetItemNames.indexOf(budgetItemName)
@@ -112,7 +110,7 @@ class FakeBudgetUseCaseImpl @Inject constructor(override var lastSelectedYearMon
     }
 
     /** Get Budget Item Entries for the selected YearMonth of a list of Budget Items.*/
-    override fun getThisYearMonthBudgetItemEntries(budgetItemIds: List<Int>): Flow<List<BudgetItemEntry>> {
+    override fun getThisYearMonthBudgetItemEntries(): Flow<List<BudgetItemEntry>> {
         TODO("Not yet implemented")
     }
 

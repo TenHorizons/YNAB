@@ -14,10 +14,10 @@ interface BudgetUseCase {
     fun getBudgetCategories(): Flow<List<Category>>
 
     /** Get Budget Items for a list of Categories.*/
-    fun getBudgetItems(categoryIds: List<Int>): Flow<List<BudgetItem>>
+    fun getBudgetItems(): Flow<List<BudgetItem>>
 
     /** Get Budget Item Entries for the selected YearMonth of a list of Budget Items.*/
-    fun getThisYearMonthBudgetItemEntries(budgetItemIds: List<Int>): Flow<List<BudgetItemEntry>>
+    fun getThisYearMonthBudgetItemEntries(): Flow<List<BudgetItemEntry>>
 
     /** Get Available for the selected YearMonth.
      * Available (YearMonth) =

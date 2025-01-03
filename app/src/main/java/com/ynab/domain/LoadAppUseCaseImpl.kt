@@ -41,21 +41,22 @@ class LoadAppUseCaseImpl @Inject constructor(
             val categories = useRepository.getUserLastBudgetId().first().let { budgetId ->
                 categoryRepository.getCategories(budgetId).first()
             }
-            val budgetItemsIds =
+            Log.d(TAG, "categories: $categories")
+            val budgetItemIds =
                 budgetItemRepository.getBudgetItems(categories.map { it.categoryId })
                     .map { list ->
                         list.map { it.budgetItemId }
                     }.first()
-
+            Log.d(TAG,"budgetItemIds: $budgetItemIds")
             val current = YearMonth.now()
             val previous = YearMonth.now().minusMonths(1)
 
-            budgetItemsIds.filter { budgetItemId ->
+            budgetItemIds.filter { budgetItemId ->
                 !budgetItemEntryRepository.isBudgetItemEntryExist(budgetItemId, current)
             }.let {
                 budgetItemEntryRepository.addBudgetItemEntries(it, current)
             }
-            budgetItemsIds.filter { budgetItemId ->
+            budgetItemIds.filter { budgetItemId ->
                 !budgetItemEntryRepository.isBudgetItemEntryExist(budgetItemId, previous)
             }.let {
                 budgetItemEntryRepository.addBudgetItemEntries(it, previous)

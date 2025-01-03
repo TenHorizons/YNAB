@@ -25,6 +25,7 @@ class AddTransactionViewModel @Inject constructor(
 
     val uiState: StateFlow<AddTransactionState> = _uiState
     val accounts = addTransactionUseCase.accounts
+    val budgetItems = addTransactionUseCase.budgetItems
 
     fun onIsSwitchGreenChanged(value: Boolean) =
         _uiState.update { it.copy(isSwitchGreen = value) }
@@ -97,4 +98,8 @@ class AddTransactionViewModel @Inject constructor(
             }
         }
     }
+
+    fun onBudgetItemSelected(selectedBudgetItemId: Int) =
+        _uiState.update { it.copy(selectedBudgetItemId = selectedBudgetItemId) }
+
 }
