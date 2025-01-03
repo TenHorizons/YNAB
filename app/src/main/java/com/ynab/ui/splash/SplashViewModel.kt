@@ -32,22 +32,19 @@ class SplashViewModel @Inject constructor(
         )
 
         viewModelScope.launch(context = Dispatchers.IO) {
-            val error =
-                if (isNewUser) loadAppUseCase.generateNewUserData()
-                else null
+            val success = loadAppUseCase.generateUserData(isNewUser)
 
             withContext(Dispatchers.Main) {
-                if (error == null) {
+                if (success) {
                     val end = System.currentTimeMillis()
                     Log.d(TAG, "load end: $end")
                     Log.d(TAG, "load time: ${end - start}")
                     onStartupComplete()
-                } else {
+                } else
                     _uiState.value = uiState.value.copy(
                         showError = true,
-                        errorMessage = "failed to generate new user data. Error: \n${error.message}"
+                        errorMessage = "Failed to generate new user data. See logs for error details."
                     )
-                }
             }
         }
     }

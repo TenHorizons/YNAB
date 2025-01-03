@@ -37,7 +37,7 @@ import com.ynab.data.repository.dataClass.Transaction
 import com.ynab.ui.shared.toCurrencyString
 
 
-val NO_ACC_ERR = "NO_ACCOUNT_ERR"
+const val NO_ACC_ERR = "NO_ACCOUNT_ERR"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

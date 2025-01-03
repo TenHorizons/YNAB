@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.math.BigDecimal
-import java.time.YearMonth
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -30,41 +29,42 @@ class BudgetViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
+            val lastSelectedYearMonth = budgetUseCase.lastSelectedYearMonth
             val categories: Flow<List<Category>> =
                 budgetUseCase.getBudgetCategories()
             val budgetItems: Flow<List<BudgetItem>> = categories.flatMapLatest { categoryList ->
                 budgetUseCase.getBudgetItems(categoryList.map { it.categoryId })
             }
-            //TODO hardcode to YearMonth.now() before enhance to support different months.
             val budgetItemEntries: Flow<List<BudgetItemEntry>> = budgetItems.flatMapLatest { budgetItemList ->
-                budgetUseCase.getBudgetItemEntries(budgetItemList.map { it.budgetItemId }, YearMonth.now())
+                budgetUseCase.getThisYearMonthBudgetItemEntries(budgetItemList.map { it.budgetItemId })
             }
+            val yearMonthAvailable: Flow<BigDecimal> =
+                budgetUseCase.getYearMonthAvailable()
+            val categoryAvailable: Flow<Map<Int, BigDecimal>> =
+                budgetUseCase.getCategoryAvailable()
+            val budgetItemEntryAvailable: Flow<Map<Int, BigDecimal>> =
+                budgetUseCase.getBudgetItemEntryAvailable()
 
             withContext(Dispatchers.Main) {
                 _uiState.update { it.copy(
+                    lastSelectedYearMonth = lastSelectedYearMonth,
                     categories = categories,
                     budgetItems = budgetItems,
-                    budgetItemEntries = budgetItemEntries
+                    budgetItemEntries = budgetItemEntries,
+                    yearMonthAvailable = yearMonthAvailable,
+                    categoryAvailable = categoryAvailable,
+                    budgetItemEntryAvailable = budgetItemEntryAvailable
                 ) }
             }
         }
     }
 
-    fun getAvailable(): Flow<BigDecimal> =
-        budgetUseCase.getAvailable(YearMonth.now()) //hardcode to YearMonth.now() before enhance to support different months.
+    fun onAssignedChange(budgetItemEntry: BudgetItemEntry, newValue: String) {
+        val value = newValue.toBigDecimalOrNull()
 
-    fun getTotalAvailable(category: Category): Flow<BigDecimal> =
-        budgetUseCase.getAvailable(category)
-
-    fun getAvailable(budgetItem: BudgetItem): Flow<BigDecimal> =
-        budgetUseCase.getAvailable(budgetItem)
-
-    fun onAssignedChange(budgetItem: BudgetItemEntry, newValue: String) {
-//        val value = newValue.toBigDecimalOrNull()
-//
-//        if (value == null) return
-//        else viewModelScope.launch(Dispatchers.IO) {
-//            budgetUseCase.updateAssigned(budgetItem, value.divide(BigDecimal(100)))
-//        }
+        if (value == null) throw IllegalArgumentException("Value $newValue is not a valid BigDecimal.")
+        else viewModelScope.launch(Dispatchers.IO) {
+            budgetUseCase.updateAssigned(budgetItemEntry, value.divide(BigDecimal(100)))
+        }
     }
 }

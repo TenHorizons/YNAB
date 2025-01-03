@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandLess
@@ -55,9 +56,7 @@ import com.ynab.ui.shared.LIGHT_RED
 import com.ynab.ui.shared.isLessThanZero
 import com.ynab.ui.shared.toCurrencyString
 import com.ynab.ui.shared.toDisplayedString
-import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
-import java.time.YearMonth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +70,11 @@ fun Budget(
     val categories by uiState.categories.collectAsStateWithLifecycle(initialValue = listOf())
     val budgetItems by uiState.budgetItems.collectAsStateWithLifecycle(initialValue = listOf())
     val budgetItemEntries by uiState.budgetItemEntries.collectAsStateWithLifecycle(initialValue = listOf())
+    val yearMonthAvailable by uiState.yearMonthAvailable.collectAsStateWithLifecycle(initialValue = BigDecimal.ZERO)
+    val categoryAvailable by uiState.categoryAvailable.collectAsStateWithLifecycle(initialValue = mapOf())
+    val budgetItemEntriesAvailable by uiState.budgetItemEntryAvailable.collectAsStateWithLifecycle(
+        initialValue = mapOf()
+    )
 
     Scaffold(
         modifier = modifier,
@@ -103,29 +107,33 @@ fun Budget(
         ) {
 
             item {
-                Available(availableAmount = vm.getAvailable())
+                Available(availableAmount = yearMonthAvailable)
             }
-            items(categories) { category ->
+            items(categories.sortedBy { it.categoryUiPosition }) { category ->
                 val categoryBudgetItems = budgetItems.filter { budgetItem ->
                     budgetItem.categoryId == category.categoryId
                 }
                 Category(
                     category = category,
-                    //TODO hardcode to YearMonth.now() before enhance to support different months.
                     totalAssigned = budgetItemEntries
-                        .filter { it.yearMonth == YearMonth.now() }
+                        .filter {
+                            it.yearMonth == uiState.lastSelectedYearMonth &&
+                                    categoryBudgetItems.map { items ->
+                                        items.budgetItemId
+                                    }.contains(it.budgetItemId)
+                        }
                         .sumOf { it.assigned },
-                    totalAvailable = vm.getTotalAvailable(category),
+                    totalAvailable = categoryAvailable[category.categoryId] ?: BigDecimal.ZERO,
                     budgetItems = categoryBudgetItems,
                     budgetItemComposable = { budgetItem ->
                         val budgetItemEntry = budgetItemEntries.first {
-                            it.yearMonth == YearMonth.now() && it.budgetItemId == budgetItem.budgetItemId
+                            it.yearMonth == uiState.lastSelectedYearMonth && it.budgetItemId == budgetItem.budgetItemId
                         }
                         BudgetItem(
                             budgetItem = budgetItem,
-                            //TODO hardcode to YearMonth.now() before enhance to support different months.
                             budgetItemEntry = budgetItemEntry,
-                            available = vm.getAvailable(budgetItem),
+                            available = budgetItemEntriesAvailable[budgetItemEntry.budgetItemEntryId]
+                                ?: BigDecimal.ZERO,
                             onBudgetItemClicked = { onBudgetItemClicked(budgetItem.budgetItemId) },
                             onAssignedChange = { newValue ->
                                 vm.onAssignedChange(budgetItemEntry, newValue)
@@ -141,14 +149,13 @@ fun Budget(
 
 @Composable
 fun Available(
-    availableAmount: Flow<BigDecimal>
+    availableAmount: BigDecimal
 ) {
-    val available by availableAmount.collectAsStateWithLifecycle(initialValue = BigDecimal.ZERO)
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor =
-            if (available.isLessThanZero()) LIGHT_RED
+            if (availableAmount.isLessThanZero()) LIGHT_RED
             else LIGHT_GREEN,
         )
     ) {
@@ -178,9 +185,9 @@ fun Available(
                     textAlign = TextAlign.End,
                     maxLines = 1,
                     color =
-                    if (available.isLessThanZero()) colorScheme.onErrorContainer
+                    if (availableAmount.isLessThanZero()) colorScheme.onErrorContainer
                     else colorScheme.onTertiaryContainer,
-                    text = available.toCurrencyString()
+                    text = availableAmount.toCurrencyString()
                 )
             }
         }
@@ -191,12 +198,11 @@ fun Available(
 fun Category(
     category: Category,
     totalAssigned: BigDecimal,
-    totalAvailable: Flow<BigDecimal>,
+    totalAvailable: BigDecimal,
     budgetItems: List<BudgetItem>,
     budgetItemComposable: @Composable (BudgetItem) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    val available by totalAvailable.collectAsStateWithLifecycle(initialValue = BigDecimal.ZERO)
 
     Card(
         modifier = Modifier.padding(4.dp)
@@ -243,7 +249,7 @@ fun Category(
                         fontSize = typography.bodyMedium.fontSize
                     )
                     Text(
-                        text = available.toCurrencyString(),
+                        text = totalAvailable.toCurrencyString(),
                         textAlign = TextAlign.End,
                         fontSize = typography.bodyMedium.fontSize
                     )
@@ -257,7 +263,7 @@ fun Category(
                 )
             }
             if (expanded) {
-                budgetItems.forEach { budgetItem ->
+                budgetItems.sortedBy { it.itemUiPosition }.forEach { budgetItem ->
                     budgetItemComposable(budgetItem)
                 }
             }
@@ -270,7 +276,7 @@ fun Category(
 fun BudgetItem(
     budgetItem: BudgetItem,
     budgetItemEntry: BudgetItemEntry,
-    available: Flow<BigDecimal>,
+    available: BigDecimal,
     onBudgetItemClicked: () -> Unit,
     onAssignedChange: (String) -> Unit
 ) {
@@ -278,7 +284,6 @@ fun BudgetItem(
         if (budgetItemEntry.assigned.isLessThanZero()) "-"
         else ""
     val displayedAssignedAmount = prefix + budgetItemEntry.assigned.toDisplayedString()
-    val budgetItemAvailable by available.collectAsStateWithLifecycle(initialValue = BigDecimal.ZERO)
     Card {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -329,7 +334,7 @@ fun BudgetItem(
                     colors = CardDefaults.cardColors(
                         containerColor =
                         when {
-                            budgetItemAvailable.isLessThanZero() -> LIGHT_RED
+                            available.isLessThanZero() -> LIGHT_RED
                             //TODO add orange if goal not met
                             else -> LIGHT_GREEN
                         }
@@ -341,7 +346,7 @@ fun BudgetItem(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = budgetItemAvailable.toCurrencyString(),
+                            text = available.toCurrencyString(),
                             fontSize = typography.bodyMedium.fontSize,
                             textAlign = TextAlign.Center
                         )
@@ -359,10 +364,16 @@ private fun CustomAssignTextField(
     value: String,
     onValueChange: (String) -> Unit
 ) {
+    var displayedValue by remember { mutableStateOf(value) }
     BasicTextField(
         modifier = modifier,
-        value = value,
-        onValueChange = onValueChange,
+        value = displayedValue,
+        onValueChange = {
+            val valueToValidate = if (it.startsWith("-")) it.drop(1) else it
+            if (valueToValidate == "") displayedValue = it
+            if (valueToValidate.toIntOrNull() == null) return@BasicTextField
+            else displayedValue = it
+        },
         singleLine = true,
         visualTransformation = BudgetItemInputVisualTransformation(),
         textStyle = TextStyle.Default.copy(
@@ -378,6 +389,12 @@ private fun CustomAssignTextField(
                     innerTextField()
                 }
             }
-        }
+        },
+        keyboardActions = KeyboardActions(
+            onDone = { onValueChange(displayedValue) },
+            onSend = { onValueChange(displayedValue) },
+            onGo = { onValueChange(displayedValue) },
+            onNext = { onValueChange(displayedValue) }
+        )
     )
 }

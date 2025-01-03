@@ -8,8 +8,8 @@ import com.ynab.data.dataSource.LocalBudgetItemEntryDataSource
 import com.ynab.data.dataSource.LocalCategoryDataSource
 import com.ynab.data.dataSource.LocalTransactionDataSource
 import com.ynab.data.dataSource.LocalUserDataSource
-import com.ynab.data.dataSource.room.RoomLocalAccountDataSource
 import com.ynab.data.dataSource.room.RoomDatabase
+import com.ynab.data.dataSource.room.RoomLocalAccountDataSource
 import com.ynab.data.dataSource.room.RoomLocalBudgetItemDataSource
 import com.ynab.data.dataSource.room.RoomLocalBudgetItemEntryDataSource
 import com.ynab.data.dataSource.room.RoomLocalCategoryDataSource
@@ -21,6 +21,8 @@ import com.ynab.data.repository.BudgetItemEntryRepository
 import com.ynab.data.repository.BudgetItemEntryRepositoryImpl
 import com.ynab.data.repository.BudgetItemRepository
 import com.ynab.data.repository.BudgetItemRepositoryImpl
+import com.ynab.data.repository.BudgetRepository
+import com.ynab.data.repository.BudgetRepositoryImpl
 import com.ynab.data.repository.CategoryRepository
 import com.ynab.data.repository.CategoryRepositoryImpl
 import com.ynab.data.repository.TransactionRepository
@@ -32,7 +34,7 @@ import com.ynab.domain.AddTransactionUseCaseImpl
 import com.ynab.domain.BasicAuthUseCase
 import com.ynab.domain.BasicAuthUseCaseImpl
 import com.ynab.domain.BudgetUseCase
-import com.ynab.domain.FakeBudgetUseCaseImpl
+import com.ynab.domain.BudgetUseCaseImpl
 import com.ynab.domain.LoadAppUseCase
 import com.ynab.domain.LoadAppUseCaseImpl
 import dagger.Binds
@@ -76,7 +78,8 @@ abstract class HiltBindings {
     abstract fun bindLocalTransactionDataSource(impl: RoomLocalTransactionDataSource): LocalTransactionDataSource
 
     @Binds
-    abstract fun bindBudgetUseCase(impl: FakeBudgetUseCaseImpl): BudgetUseCase
+    @Singleton
+    abstract fun bindBudgetUseCase(impl: BudgetUseCaseImpl): BudgetUseCase
 
     @Binds
     abstract fun bindCategoryRepository(impl: CategoryRepositoryImpl): CategoryRepository
@@ -95,6 +98,9 @@ abstract class HiltBindings {
 
     @Binds
     abstract fun bindBudgetItemEntryRepository(impl: BudgetItemEntryRepositoryImpl): BudgetItemEntryRepository
+
+    @Binds
+    abstract fun bindBudgetRepository(impl: BudgetRepositoryImpl): BudgetRepository
 }
 
 @Module

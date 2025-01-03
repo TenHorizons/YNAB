@@ -20,8 +20,8 @@ class BudgetItemInputVisualTransformation: VisualTransformation {
         val zero = symbols.zeroDigit
 
         val inputText = text.text
-        val isPositiveValue = inputText.first() != '-'
-        val textToProcess = if(isPositiveValue) inputText.drop(1) else inputText
+        val isPositiveValue = (inputText.firstOrNull() ?: "") != '-'
+        val textToProcess = if(isPositiveValue) inputText else inputText.drop(1)
 
         /*chunked() splits the string from left to right.
         * The last chunk may have less than 3 digits.

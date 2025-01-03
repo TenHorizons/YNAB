@@ -7,6 +7,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
+import java.time.YearMonth
 
 @Dao
 interface UserDao {
@@ -62,6 +64,10 @@ interface TransactionDao {
     fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>>
     @Query("select * from `transaction` where transactionId = :transactionId")
     fun getTransactionById(transactionId: Int): Transaction?
+    @Query("select * from `transaction` where date between :startDate and :endDate")
+    fun getTransactionsByLocalDateRange(startDate: LocalDate, endDate: LocalDate): Flow<List<Transaction>>
+    @Query("select * from `transaction` where date between :startDate and :endDate and budgetItemId = :budgetItemId")
+    fun getTransactionsByLocalDateRangeAndBudgetItemId(startDate: LocalDate, endDate: LocalDate, budgetItemId: Int): Flow<List<Transaction>>
 
     @Insert
     fun insert(transaction:Transaction): Long // returns the id of the added record
@@ -77,6 +83,10 @@ interface BudgetItemDao {
     fun insert(budgetItems: List<BudgetItem>)
     @Query("select budgetItemId from budgetItem where budgetItemName = :budgetItemName and categoryId = :categoryId")
     fun getBudgetItemId(budgetItemName: String, categoryId: Int): Int
+    @Query("select * from budgetItem where categoryId in (:categoryIds)")
+    fun getBudgetItemsByCategoryIds(categoryIds: List<Int>): Flow<List<BudgetItem>>
+    @Query("select budgetItemId from budgetItem where categoryId in (:categoryIds)")
+    fun getBudgetItemsIdsByCategoryIds(categoryIds: List<Int>): Flow<List<Int>>
 }
 
 @Dao
@@ -85,10 +95,25 @@ interface CategoryDao {
     fun insert(budgetItems: List<Category>)
     @Query("select categoryId from category where categoryName = :categoryName and budgetId = :budgetId")
     fun getCategoryId(categoryName: String, budgetId: Int): Int
+    @Query("select * from category where budgetId = :budgetId")
+    fun getCategoriesByBudgetId(budgetId: Int): Flow<List<Category>>
 }
 
 @Dao
 interface BudgetItemEntryDao {
+    @Query("select * from budgetItemEntry where budgetItemId in (:budgetItemIds) and yearMonth = :yearMonth")
+    fun getBudgetItemEntriesByBudgetIdsAndYearMonth(budgetItemIds: List<Int>, yearMonth: YearMonth): Flow<List<BudgetItemEntry>>
+    @Query("select exists (select * from budgetItemEntry where budgetItemId = :budgetItemId and yearMonth = :yearMonth)")
+    fun isBudgetItemEntryExist(budgetItemId: Int, yearMonth: YearMonth): Boolean
+    @Query("select * from budgetItemEntry where budgetItemId = :budgetItemId and yearMonth = :yearMonth")
+    fun getBudgetItemEntryByBudgetItemIdAndYearMonth(budgetItemId: Int, yearMonth: YearMonth): Flow<BudgetItemEntry>
+    @Query("select * from budgetItemEntry where budgetItemEntryId = :budgetItemEntryId")
+    fun getBudgetItemEntryByBudgetItemEntryId(budgetItemEntryId: Int): Flow<BudgetItemEntry>
+
     @Insert
     fun insert(budgetItemEntry: BudgetItemEntry)
+    @Insert
+    fun insert(budgetItemEntries: List<BudgetItemEntry>)
+    @Update
+    fun update(budgetItemEntry: BudgetItemEntry)
 }

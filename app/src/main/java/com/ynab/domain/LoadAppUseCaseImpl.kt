@@ -5,7 +5,10 @@ import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.BudgetItemEntryRepository
 import com.ynab.data.repository.BudgetItemRepository
 import com.ynab.data.repository.CategoryRepository
+import com.ynab.data.repository.UserRepository
 import com.ynab.data.repository.dataClass.TutorialCard
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import java.time.YearMonth
 import javax.inject.Inject
 
@@ -14,36 +17,80 @@ private const val TAG = "${TAG_PREFIX}LoadAppUseCaseImpl"
 class LoadAppUseCaseImpl @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val budgetItemRepository: BudgetItemRepository,
-    private val budgetItemEntryRepository: BudgetItemEntryRepository
-): LoadAppUseCase {
+    private val budgetItemEntryRepository: BudgetItemEntryRepository,
+    private val useRepository: UserRepository
+) : LoadAppUseCase {
 
-    override suspend fun generateNewUserData(): Exception? {
+    override suspend fun generateUserData(isNewUser: Boolean): Boolean {
         try {
-            categoryRepository.addCategories(categoryNames = categoryToItemNamesMap.keys, budgetId = 0)
-            categoryToItemNamesMap.map { (categoryName, budgetItemNames) ->
-                val categoryId: Int = categoryRepository.getCategoryId(categoryName = categoryName, budgetId = 0)
-                budgetItemRepository.addBudgetItems(
-                    categoryId = categoryId,
-                    budgetItemNames = budgetItemNames,
-                    yearMonth = YearMonth.now()
-                )
-                budgetItemNames.map { budgetItemName ->
-                    val budgetItemId: Int = budgetItemRepository.getBudgetItemId(budgetItemName = budgetItemName, categoryId = categoryId)
-                    budgetItemEntryRepository.addBudgetItemEntry(
-                        budgetItemId = budgetItemId,
-                        yearMonth = YearMonth.now()
-                    )
-                }
-            }
-            return null
+            if (isNewUser)
+                generateNewUserCategoriesAndBudgetItems()
+            return generateAbsentCurrentAndPreviousBudgetItemEntries()
         } catch (e: Exception) {
-            Log.d(TAG, "An unknown error occurred at generateNewUserData: ${e.stackTrace}")
-            return e
+            Log.d(TAG, "An unknown error occurred at generateNewUserData: \n$e")
+            return false
         }
     }
 
     override suspend fun getTutorialCards(): List<TutorialCard> {
         TODO("Not yet implemented")
+    }
+
+    private suspend fun generateAbsentCurrentAndPreviousBudgetItemEntries(): Boolean {
+        try {
+            val categories = useRepository.getUserLastBudgetId().first().let { budgetId ->
+                categoryRepository.getCategories(budgetId).first()
+            }
+            val budgetItemsIds =
+                budgetItemRepository.getBudgetItems(categories.map { it.categoryId })
+                    .map { list ->
+                        list.map { it.budgetItemId }
+                    }.first()
+
+            val current = YearMonth.now()
+            val previous = YearMonth.now().minusMonths(1)
+
+            budgetItemsIds.filter { budgetItemId ->
+                !budgetItemEntryRepository.isBudgetItemEntryExist(budgetItemId, current)
+            }.let {
+                budgetItemEntryRepository.addBudgetItemEntries(it, current)
+            }
+            budgetItemsIds.filter { budgetItemId ->
+                !budgetItemEntryRepository.isBudgetItemEntryExist(budgetItemId, previous)
+            }.let {
+                budgetItemEntryRepository.addBudgetItemEntries(it, previous)
+            }
+            return true
+        } catch (e: Exception) {
+            Log.d(
+                TAG,
+                "Unknown error occurred at generateAbsentCurrentAndPreviousBudgetItemEntries: \n $e"
+            )
+            return false
+        }
+    }
+
+    private fun generateNewUserCategoriesAndBudgetItems() {
+        categoryRepository.addCategories(categoryNames = categoryToItemNamesMap.keys, budgetId = 0)
+        categoryToItemNamesMap.map { (categoryName, budgetItemNames) ->
+            val categoryId: Int =
+                categoryRepository.getCategoryId(categoryName = categoryName, budgetId = 0)
+            budgetItemRepository.addBudgetItems(
+                categoryId = categoryId,
+                budgetItemNames = budgetItemNames,
+                yearMonth = YearMonth.now()
+            )
+            budgetItemNames.map { budgetItemName ->
+                val budgetItemId: Int = budgetItemRepository.getBudgetItemId(
+                    budgetItemName = budgetItemName,
+                    categoryId = categoryId
+                )
+                budgetItemEntryRepository.addBudgetItemEntry(
+                    budgetItemId = budgetItemId,
+                    yearMonth = YearMonth.now()
+                )
+            }
+        }
     }
 
     private val categoryToItemNamesMap = mapOf(
