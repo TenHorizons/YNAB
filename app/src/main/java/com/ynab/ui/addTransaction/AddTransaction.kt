@@ -191,7 +191,7 @@ fun AmountRow(
                 singleLine = true,
                 onValueChange = onAmountChanged,
                 visualTransformation =
-                CurrencyAmountInputVisualTransformation(isPositiveValue = uiState.isSwitchGreen),
+                CurrencyAmountInputVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
                 textStyle = LocalTextStyle.current.copy(
                     fontSize = 32.sp,

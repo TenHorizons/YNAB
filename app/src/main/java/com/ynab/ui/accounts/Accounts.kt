@@ -53,8 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ynab.ui.shared.displayTwoDecimal
-import com.ynab.ui.shared.isLessThanZero
+import com.ynab.ui.shared.toFormattedCurrencyString
 import java.math.BigDecimal
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -196,12 +195,7 @@ fun Account(
                 Spacer(Modifier.weight(1f))
                 Column {
                     Text("Balance:")
-                    val prefix =
-                        if (balance.isLessThanZero()) "-RM"
-                        else "RM"
-                    Text(
-                        text = prefix + balance.displayTwoDecimal().abs()
-                    )
+                    Text(text = balance.toFormattedCurrencyString())
                 }
                 Spacer(Modifier.padding(horizontal = 8.dp))
                 Icon(

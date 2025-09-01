@@ -5,89 +5,120 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.Currency
+import java.util.Locale
 
 /**Article explaining the class:
  * https://medium.com/@banmarkovic/how-to-create-currency-amount-input-in-android-jetpack-compose-1bd11ba3b629
  * Github with the class:
  * https://github.com/banmarkovic/CurrencyAmountInput/tree/master/app/src/main/java/com/ban/currencyamountinput*/
 class CurrencyAmountInputVisualTransformation(
-    private val numberOfDecimals: Int = 2,
-    private val isPositiveValue:Boolean
+    private val locale: Locale = Locale.getDefault(),
+    private val fixedDecimalDigits: Int = Currency.getInstance(locale).defaultFractionDigits
 ) : VisualTransformation {
 
-    private val symbols = DecimalFormat().decimalFormatSymbols
+    private val numberFormat: DecimalFormat =
+        (NumberFormat.getCurrencyInstance(locale) as DecimalFormat)
+
+    // We need the raw symbols for parsing and building the display string carefully
+    private val decimalSeparator: Char = numberFormat.decimalFormatSymbols.decimalSeparator
+    private val groupingSeparator: Char = numberFormat.decimalFormatSymbols.groupingSeparator
+    private val currencySymbol: String = numberFormat.decimalFormatSymbols.currencySymbol
 
     override fun filter(text: AnnotatedString): TransformedText {
-        val thousandsSeparator = symbols.groupingSeparator
-        val decimalSeparator = symbols.decimalSeparator
-        val zero = symbols.zeroDigit
 
-        val inputText = text.text
-
-        /*chunked() splits the string from left to right.
-        * The last chunk may have less than 3 digits.
-        * Therefore, the string is reversed so that
-        * the front few digits will be the ones
-        * with less than 3 digits
-        * Example: 12,345,678*/
-        val intPart = inputText
-            .dropLast(numberOfDecimals)
-            .reversed()
-            .chunked(3)
-            .joinToString(thousandsSeparator.toString())
-            .reversed()
-            .ifEmpty {
-                zero.toString()
-            }
-
-        /*if input text length < numberOfDecimals, fills the from if it with zeros.
-        * Example: numberOfDecimals = 2; inputText = "1"
-        * Result: "01"
-        * This is later combined with intPart to make "xx.01*/
-        val fractionPart = inputText.takeLast(numberOfDecimals).let {
-            if (it.length != numberOfDecimals) {
-                List(numberOfDecimals - it.length) {
-                    zero
-                }.joinToString("") + it
-            } else {
-                it
-            }
+        val originalText = text.text
+        if (originalText.isEmpty()) {
+            return TransformedText(
+                AnnotatedString(formatToCurrency(0L)), // Show "RM0.00" or "$0.00"
+                OffsetMapping.Identity
+            )
         }
 
-        val formattedNumber = intPart + decimalSeparator + fractionPart
+        // Ensure only digits are processed, helpful if input source isn't perfectly clean
+        val digitsOnly = originalText.filter { it.isDigit() }
+        if (digitsOnly.isEmpty()) {
+            return TransformedText(
+                AnnotatedString(formatToCurrency(0L)),
+                OffsetMapping.Identity
+            )
+        }
 
-        //might make .toDouble() fail
-        val currency = if(isPositiveValue) "RM" else "-RM"
+        val amountInSmallestUnit = digitsOnly.toLongOrNull() ?: 0L
+        val formattedString = formatToCurrency(amountInSmallestUnit)
 
-        val displayedText = currency + formattedNumber
-
-        val newText = AnnotatedString(
-            text = displayedText,
-            spanStyles = text.spanStyles,
-            paragraphStyles = text.paragraphStyles
+        return TransformedText(
+            text = AnnotatedString(formattedString),
+            offsetMapping = ForceCursorToEndOffsetMapping(
+                transformedTextLength = formattedString.length,
+                originalTextLength = digitsOnly.length
+            )
         )
-
-        /*Offsets cursor based on new text.
-        * Example:
-        * inputText: 1000
-        * displayedText: 10.00*/
-        val offsetMapping = FixedCursorOffsetMapping(
-            inputLength = inputText.length,
-            displayedLength = displayedText.length
-        )
-
-        return TransformedText(newText, offsetMapping)
     }
 
-    /*Android Developer Documentation explaining cursor offsetting:
-    * https://developer.android.com/reference/kotlin/androidx/compose/ui/text/input/VisualTransformation*/
-    private class FixedCursorOffsetMapping(
-        private val inputLength: Int,
-        private val displayedLength: Int,
-    ) : OffsetMapping {
-        override fun originalToTransformed(offset: Int): Int =
-            displayedLength
 
-        override fun transformedToOriginal(offset: Int): Int = inputLength
+    private fun formatToCurrency(amountInSmallestUnit: Long): String {
+        // We need to construct the display string carefully to match DecimalFormat's output
+        // without directly using its format method on a pre-divided number,
+        // as that can mess with how we want to handle the input (raw cents/smallest unit).
+
+        val majorUnits = amountInSmallestUnit / powerOfTen(fixedDecimalDigits)
+        val minorUnits = amountInSmallestUnit % powerOfTen(fixedDecimalDigits)
+
+        // Format major part with grouping
+        val majorFormat = (NumberFormat.getNumberInstance(locale) as DecimalFormat).apply {
+            isGroupingUsed = true
+            minimumFractionDigits = 0 // No decimals for the major part here
+            maximumFractionDigits = 0
+        }
+        val formattedMajorPart = majorFormat.format(majorUnits)
+
+        // Format minor part, padding with leading zeros if necessary
+        val formattedMinorPart = minorUnits.toString().padStart(fixedDecimalDigits, '0')
+
+        return if (fixedDecimalDigits > 0) {
+            "$currencySymbol$formattedMajorPart$decimalSeparator$formattedMinorPart"
+        } else {
+            "$currencySymbol$formattedMajorPart" // For currencies with no decimals (e.g., JPY)
+        }
+    }
+
+    private fun powerOfTen(exponent: Int): Long {
+        var result = 1L
+        repeat(exponent) { result *= 10 }
+        return result
+    }
+}
+
+
+/**
+ * An OffsetMapping that always places the cursor at the end of the transformed text.
+ * The original offset is largely ignored for transformedToOriginal, and originalToTransformed
+ * always returns the length of the transformed text.
+ *
+ * @param transformedTextLength The length of the fully formatted (transformed) string.
+ * @param originalTextLength The length of the original, unformatted text.
+ */
+class ForceCursorToEndOffsetMapping(
+    private val transformedTextLength: Int,
+    private val originalTextLength: Int
+) : OffsetMapping {
+
+    /**
+     * Maps an offset from the original text to an offset in the transformed text.
+     * Always returns the end of the transformed text.
+     */
+    override fun originalToTransformed(offset: Int): Int {
+        return transformedTextLength
+    }
+
+    /**
+     * Maps an offset from the transformed text to an offset in the original text.
+     * Always returns the end of the original text, as we assume any interaction
+     * with the transformed text implies editing at the end of the conceptual raw input.
+     */
+    override fun transformedToOriginal(offset: Int): Int {
+        return originalTextLength
     }
 }

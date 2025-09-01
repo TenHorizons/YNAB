@@ -29,7 +29,7 @@ class FakeUserRepository @Inject constructor(): UserRepository {
         TODO("Not yet implemented")
     }
 
-    override fun setSelectedBudgetId(budgetId: Int) {
+    fun setSelectedBudgetId(budgetId: Int) {
         TODO("Not yet implemented")
     }
 

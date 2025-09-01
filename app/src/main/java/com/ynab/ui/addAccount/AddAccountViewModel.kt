@@ -65,6 +65,20 @@ class AddAccountViewModel @Inject constructor(
                 return@launch
             }
 
+            val initialBalance = uiState.value.displayedAccountBalance.currencyStringToBigDecimal()
+            if (initialBalance == null) {
+                withContext(Dispatchers.Main) {
+                    _uiState.update {
+                        it.copy(
+                            isAddInProgress = false,
+                            isAddError = true,
+                            errorMessage = "Please enter a valud balance."
+                        )
+                    }
+                }
+                return@launch
+            }
+
             //add account
             val addedAccountId = accountRepository.addAccount(
                 accountName = uiState.value.accountName
@@ -80,7 +94,6 @@ class AddAccountViewModel @Inject constructor(
                     }
                 }
 
-            val initialBalance = uiState.value.displayedAccountBalance.currencyStringToBigDecimal()
 
             val isAddInitialTransactionSuccess =
                 if (initialBalance.signum() == 0) true

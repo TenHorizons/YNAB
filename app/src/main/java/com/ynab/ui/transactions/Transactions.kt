@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ynab.data.repository.dataClass.Account
 import com.ynab.data.repository.dataClass.Transaction
-import com.ynab.ui.shared.toCurrencyString
+import com.ynab.ui.shared.toFormattedCurrencyString
 
 
 val NO_ACC_ERR = "NO_ACCOUNT_ERR"
@@ -164,7 +164,7 @@ fun Transaction(
             )
             Spacer(modifier = Modifier.weight(0.01f))
             Text(
-                text = transaction.amount.toCurrencyString(),
+                text = transaction.amount.toFormattedCurrencyString(),
                 fontSize = typography.titleLarge.fontSize
             )
         }

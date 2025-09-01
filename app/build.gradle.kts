@@ -92,4 +92,8 @@ dependencies {
     implementation(libs.room.paging)
     androidTestImplementation(libs.androidx.arch.core.testing)
     //----
+    //Test
+    testImplementation(libs.google.truth)
+    testImplementation(libs.io.mockk)
+    //----
 }

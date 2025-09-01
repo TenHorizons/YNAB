@@ -94,14 +94,14 @@ fun AddAccount(
                 onValueChange = vm::onBalanceChange,
                 modifier = Modifier.fillMaxWidth(),
                 visualTransformation =
-                CurrencyAmountInputVisualTransformation(isPositiveValue = true),
+                CurrencyAmountInputVisualTransformation(),
                 colors = TextFieldDefaults.colors(
                     focusedIndicatorColor = Transparent,
                     unfocusedIndicatorColor = Transparent,
                     disabledIndicatorColor = Transparent,
                 ),
                 keyboardOptions =
-                KeyboardOptions(keyboardType = KeyboardType.NumberPassword)
+                KeyboardOptions(keyboardType = KeyboardType.Decimal)
             )
             Spacer(Modifier.height(8.dp))
             Row(

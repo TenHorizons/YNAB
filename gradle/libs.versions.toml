@@ -1,5 +1,5 @@
 [versions]
-agp = "8.7.3"
+agp = "8.10.1"
 kotlin = "2.0.0"
 coreKtx = "1.10.1"
 junit = "4.13.2"
@@ -21,6 +21,10 @@ hiltNavigationComposeVersion = "1.2.0"
 roomVersion = "2.6.1"
 archCoreTestingVersion = "2.2.0"
 #----
+# test
+googleTruthVersion = "1.4.4"
+mockkVersion = "1.13.5"
+#-----
 
 [libraries]
 #default generated
@@ -58,6 +62,10 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomVers
 room-testing = { group = "androidx.room", name = "room-testing", version.ref = "roomVersion"}
 room-paging = { group = "androidx.room", name = "room-paging", version.ref = "roomVersion"}
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "archCoreTestingVersion"}
+# test
+google-truth = { group = "com.google.truth", name = "truth", version.ref = "googleTruthVersion" }
+io-mockk = { group = "io.mockk", name = "mockk", version.ref = "mockkVersion" }
+#-----
 
 [plugins]
 #default generated
