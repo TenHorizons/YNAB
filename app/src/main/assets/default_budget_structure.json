@@ -1,0 +1,56 @@
+{
+  "categories": [
+    {
+      "name": "Immediate Obligations",
+      "items": [
+        "Groceries",
+        "Internet",
+        "Electric",
+        "Water",
+        "Rent/Mortgage",
+        "Monthly Software Subscriptions",
+        "Interest & Fees"
+      ]
+    },
+    {
+      "name": "True Expenses",
+      "items": [
+        "Emergency Fund",
+        "Auto Maintenance",
+        "Home Maintenance",
+        "Renter's/Home Insurance",
+        "Medical",
+        "Clothing",
+        "Gifts",
+        "Computer Replacement",
+        "Annual Software Subscriptions",
+        "Stuff I Forgot to Budget For"
+      ]
+    },
+    {
+      "name": "Debt Payments",
+      "items": [
+        "Student Loan",
+        "Auto Loan"
+      ]
+    },
+    {
+      "name": "Quality of Life Goals",
+      "items": [
+        "Investments",
+        "Vacation",
+        "Fitness",
+        "Education"
+      ]
+    },
+    {
+      "name": "Just for Fun",
+      "items": [
+        "Dining Out",
+        "Gaming",
+        "Music",
+        "Fun Money"
+      ]
+    }
+  ]
+}

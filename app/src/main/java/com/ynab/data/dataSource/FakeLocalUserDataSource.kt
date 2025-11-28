@@ -21,4 +21,11 @@ class FakeLocalUserDataSource @Inject constructor(): LocalUserDataSource {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateLastBudgetId(
+        username: String,
+        budgetId: Int
+    ): Boolean {
+        TODO("Not yet implemented")
+    }
+
 }

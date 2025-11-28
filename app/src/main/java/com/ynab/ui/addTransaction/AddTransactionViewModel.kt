@@ -95,6 +95,7 @@ class AddTransactionViewModel @Inject constructor(
                             errorMessage = "Unknown error occurred when adding transaction."
                         )
                     }
+
             }
         }
     }

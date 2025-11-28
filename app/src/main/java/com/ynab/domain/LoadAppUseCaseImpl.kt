@@ -4,6 +4,7 @@ import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.BudgetItemEntryRepository
 import com.ynab.data.repository.BudgetItemRepository
+import com.ynab.data.repository.BudgetRepository
 import com.ynab.data.repository.CategoryRepository
 import com.ynab.data.repository.UserRepository
 import com.ynab.data.repository.dataClass.TutorialCard
@@ -18,16 +19,25 @@ class LoadAppUseCaseImpl @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val budgetItemRepository: BudgetItemRepository,
     private val budgetItemEntryRepository: BudgetItemEntryRepository,
-    private val useRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val budgetRepository: BudgetRepository,
+    private val defaultBudgetStructureLoader: DefaultBudgetStructureLoader
 ) : LoadAppUseCase {
 
     override suspend fun generateUserData(isNewUser: Boolean): Boolean {
         try {
-            if (isNewUser)
-                generateNewUserCategoriesAndBudgetItems()
+            if (isNewUser) {
+                // Create default budget first, then categories and items
+                val budgetId = createDefaultBudget()
+                if (budgetId == -1) {
+                    Log.e(TAG, "Failed to create default budget")
+                    return false
+                }
+                generateNewUserCategoriesAndBudgetItems(budgetId)
+            }
             return generateAbsentCurrentAndPreviousBudgetItemEntries()
         } catch (e: Exception) {
-            Log.d(TAG, "An unknown error occurred at generateNewUserData: \n$e")
+            Log.e(TAG, "An unknown error occurred at generateNewUserData: \n$e")
             return false
         }
     }
@@ -38,7 +48,7 @@ class LoadAppUseCaseImpl @Inject constructor(
 
     private suspend fun generateAbsentCurrentAndPreviousBudgetItemEntries(): Boolean {
         try {
-            val categories = useRepository.getUserLastBudgetId().first().let { budgetId ->
+            val categories = userRepository.getUserLastBudgetId().first().let { budgetId ->
                 categoryRepository.getCategories(budgetId).first()
             }
             Log.d(TAG, "categories: $categories")
@@ -71,11 +81,34 @@ class LoadAppUseCaseImpl @Inject constructor(
         }
     }
 
-    private fun generateNewUserCategoriesAndBudgetItems() {
-        categoryRepository.addCategories(categoryNames = categoryToItemNamesMap.keys, budgetId = 0)
+    /**
+     * Creates a default budget for the current user and returns the budgetId.
+     * Returns -1 if creation fails.
+     */
+    private suspend fun createDefaultBudget(): Int {
+        return try {
+            val username = userRepository.getSessionUsername()
+            val budgetId = budgetRepository.createBudget(username, "My Budget")
+            
+            // Update user's lastBudgetId
+            userRepository.updateLastBudgetId(budgetId)
+            
+            Log.d(TAG, "Created default budget with ID: $budgetId for user: $username")
+            budgetId
+        } catch (e: Exception) {
+            Log.e(TAG, "Error creating default budget: ${e.stackTraceToString()}")
+            -1
+        }
+    }
+
+    private fun generateNewUserCategoriesAndBudgetItems(budgetId: Int) {
+        // Load default budget structure from JSON file
+        val categoryToItemNamesMap = defaultBudgetStructureLoader.loadDefaultStructure()
+        
+        categoryRepository.addCategories(categoryNames = categoryToItemNamesMap.keys, budgetId = budgetId)
         categoryToItemNamesMap.map { (categoryName, budgetItemNames) ->
             val categoryId: Int =
-                categoryRepository.getCategoryId(categoryName = categoryName, budgetId = 0)
+                categoryRepository.getCategoryId(categoryName = categoryName, budgetId = budgetId)
             budgetItemRepository.addBudgetItems(
                 categoryId = categoryId,
                 budgetItemNames = budgetItemNames,
@@ -93,39 +126,4 @@ class LoadAppUseCaseImpl @Inject constructor(
             }
         }
     }
-
-    private val categoryToItemNamesMap = mapOf(
-        "Immediate Obligations" to listOf(
-            "Groceries",
-            "Internet",
-            "Electric",
-            "Water",
-            "Rent/Mortgage",
-            "Monthly Software Subscriptions",
-            "Interest & Fees"
-        ),
-        "True Expenses" to listOf(
-            "Emergency Fund",
-            "Auto Maintenance",
-            "Home Maintenance",
-            "Renter's/Home Insurance",
-            "Medical",
-            "Clothing",
-            "Gifts",
-            "Computer Replacement",
-            "Annual Software Subscriptions",
-            "Stuff I Forgot to Budget For"
-        ),
-        "Debt Payments" to listOf(
-            "Student Loan", "Auto Loan"
-        ),
-        "Quality of Life Goals" to listOf(
-            "Investments", "Vacation",
-            "Fitness", "Education"
-        ),
-        "Just for Fun" to listOf(
-            "Dining Out", "Gaming",
-            "Music", "Fun Money"
-        )
-    )
 }

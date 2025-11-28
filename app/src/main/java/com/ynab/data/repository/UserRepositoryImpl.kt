@@ -40,6 +40,17 @@ class UserRepositoryImpl @Inject constructor(
     override fun getUserLastBudgetId(): Flow<Int> =
         userDs.getUserLastBudgetId(sessionUsername)
 
+    override suspend fun updateLastBudgetId(budgetId: Int): Boolean {
+        return try {
+            userDs.updateLastBudgetId(sessionUsername, budgetId)
+            Log.d(TAG, "Updated lastBudgetId to $budgetId for user $sessionUsername")
+            true
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to update lastBudgetId: ${e.stackTraceToString()}")
+            false
+        }
+    }
+
     override suspend fun deleteUser(): Boolean {
         if(userDs.deleteUser(sessionUsername)) return true
         Log.d(TAG, "Failed to delete user")

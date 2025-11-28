@@ -22,6 +22,8 @@ class FakeUserRepository @Inject constructor(): UserRepository {
         TODO("Not yet implemented")
     }
 
+    override suspend fun updateLastBudgetId(budgetId: Int): Boolean = true
+
     override suspend fun deleteUser(): Boolean {
         TODO("Not yet implemented")
     }

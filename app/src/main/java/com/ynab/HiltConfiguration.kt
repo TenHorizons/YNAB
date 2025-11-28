@@ -110,9 +110,15 @@ object RoomModule {
     @Singleton
     fun provideRoomDatabase(@ApplicationContext app: Context): RoomDatabase {
         return Room.databaseBuilder(
-            context = app,
-            klass = RoomDatabase::class.java,
-            name = "ynab_database"
-        ).fallbackToDestructiveMigration().build()
+                context = app,
+                klass = RoomDatabase::class.java,
+                name = "ynab_database"
+            ).fallbackToDestructiveMigration(false).build()
+    }
+    
+    @Provides
+    @Singleton
+    fun provideContext(@ApplicationContext app: Context): Context {
+        return app
     }
 }

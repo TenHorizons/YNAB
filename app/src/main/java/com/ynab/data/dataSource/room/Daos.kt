@@ -18,12 +18,18 @@ interface UserDao {
 
     @Query("select exists (select username from user where username = :username)")
     suspend fun isUsernameExist(username: String): Boolean
+    
+    @Query("select userId from user where username = :username")
+    suspend fun getUserIdByUsername(username: String): Int?
 
     @Query("delete from user where username = :username")
     suspend fun deleteUser(username: String): Int
 
     @Query("select lastBudgetId from user where username = :username")
     fun getUserLastBudgetId(username: String): Flow<Int>
+    
+    @Query("update user set lastBudgetId = :budgetId where userId = :userId")
+    suspend fun updateLastBudgetId(userId: Int, budgetId: Int): Int
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insert(user: User): Long //OnConflictStrategy.ABORT: SQLiteConstraintException of username exists, returns the id of the added record
@@ -45,6 +51,8 @@ interface AccountDao {
     fun getNumberOfAccountsByBudgetId(budgetId: Int): Int
     @Query("select * from account where accountId = :accountId")
     fun getAccountById(accountId: Int): Account?
+    @Query("select accountId from account where budgetId = :budgetId")
+    suspend fun getAccountIdsByBudgetId(budgetId: Int): List<Int>
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
     fun insert(account: Account): Long // returns the id of the added record
@@ -54,6 +62,9 @@ interface AccountDao {
 
     @Delete
     fun delete(account: Account)
+    
+    @Query("delete from account where budgetId = :budgetId")
+    suspend fun deleteAccountsByBudgetId(budgetId: Int): Int
 }
 
 @Dao
@@ -75,6 +86,9 @@ interface TransactionDao {
     fun update(transaction: Transaction): Int //returns number of rows updated
     @Delete
     fun delete(transaction: Transaction)
+    
+    @Query("delete from `transaction` where accountId in (:accountIds)")
+    suspend fun deleteTransactionsByAccountIds(accountIds: List<Int>): Int
 }
 
 @Dao
@@ -87,6 +101,11 @@ interface BudgetItemDao {
     fun getBudgetItemsByCategoryIds(categoryIds: List<Int>): Flow<List<BudgetItem>>
     @Query("select budgetItemId from budgetItem where categoryId in (:categoryIds)")
     fun getBudgetItemsIdsByCategoryIds(categoryIds: List<Int>): Flow<List<Int>>
+    @Query("select budgetItemId from budgetItem where categoryId in (:categoryIds)")
+    suspend fun getBudgetItemIdsByCategoryIds(categoryIds: List<Int>): List<Int>
+    
+    @Query("delete from budgetItem where categoryId in (:categoryIds)")
+    suspend fun deleteBudgetItemsByCategoryIds(categoryIds: List<Int>): Int
 }
 
 @Dao
@@ -97,6 +116,11 @@ interface CategoryDao {
     fun getCategoryId(categoryName: String, budgetId: Int): Int
     @Query("select * from category where budgetId = :budgetId")
     fun getCategoriesByBudgetId(budgetId: Int): Flow<List<Category>>
+    @Query("select categoryId from category where budgetId = :budgetId")
+    suspend fun getCategoryIdsByBudgetId(budgetId: Int): List<Int>
+    
+    @Query("delete from category where budgetId = :budgetId")
+    suspend fun deleteCategoriesByBudgetId(budgetId: Int): Int
 }
 
 @Dao
@@ -116,4 +140,19 @@ interface BudgetItemEntryDao {
     fun insert(budgetItemEntries: List<BudgetItemEntry>)
     @Update
     fun update(budgetItemEntry: BudgetItemEntry)
+    
+    @Query("delete from budgetItemEntry where budgetItemId in (:budgetItemIds)")
+    suspend fun deleteBudgetItemEntriesByBudgetItemIds(budgetItemIds: List<Int>): Int
+}
+
+@Dao
+interface BudgetDao {
+    @Query("select * from budget where userId = :userId")
+    suspend fun getBudgetsByUserId(userId: Int): List<Budget>
+    
+    @Insert
+    suspend fun insert(budget: Budget): Long // returns the budgetId
+    
+    @Query("delete from budget where userId = :userId")
+    suspend fun deleteBudgetsByUserId(userId: Int): Int
 }

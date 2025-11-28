@@ -27,7 +27,8 @@ data class Account(
 @Entity(
     indices = [
         Index(value = ["accountId", "date"]),
-        Index(value = ["budgetItemId", "date"])
+        Index(value = ["budgetItemId", "date"]),
+        Index(value = ["budgetItemId"])
     ]
 )
 data class Transaction(
@@ -39,7 +40,7 @@ data class Transaction(
     var memo: String
 )
 
-@Entity(indices = [Index(value = ["username", "budgetName"], unique = true)])
+@Entity(indices = [Index(value = ["userId", "budgetName"], unique = true)])
 data class Budget(
     @PrimaryKey(autoGenerate = true) val budgetId: Int = 0,
     val userId: Int,
@@ -47,7 +48,10 @@ data class Budget(
     var uiPosition: Int
 )
 
-@Entity(indices = [Index(value = ["budgetId", "categoryName"], unique = true)])
+@Entity(indices = [
+    Index(value = ["budgetId", "categoryName"], unique = true),
+    Index(value = ["budgetId"])
+    ])
 data class Category(
     @PrimaryKey(autoGenerate = true) val categoryId: Int = 0,
     val budgetId: Int,
@@ -55,7 +59,10 @@ data class Category(
     var categoryUiPosition: Int
 )
 
-@Entity(indices = [Index(value = ["categoryId", "budgetItemName"], unique = true)])
+@Entity(indices = [
+    Index(value = ["categoryId", "budgetItemName"], unique = true),
+    Index(value = ["categoryId"])
+    ])
 data class BudgetItem(
     @PrimaryKey(autoGenerate = true) val budgetItemId: Int = 0,
     var categoryId: Int,
