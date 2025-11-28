@@ -4,19 +4,21 @@ import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.LocalTransactionDataSource
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Transaction
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.map
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}RoomLocalTransactionDataSource"
 
 class RoomLocalTransactionDataSource @Inject constructor(
     db: RoomDatabase
-): LocalTransactionDataSource {
+) : LocalTransactionDataSource {
     private val transactionDao = db.transactionDao()
 
     override fun addTransaction(
@@ -59,9 +61,10 @@ class RoomLocalTransactionDataSource @Inject constructor(
 
     override fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> {
         try {
-            return transactionDao.getTransactionsByAccountIdList(accountIdList).map { transactions ->
-                transactions.map { roomTransaction -> roomTransaction.toUiTransaction() }
-            }
+            return transactionDao.getTransactionsByAccountIdList(accountIdList)
+                .map { transactions ->
+                    transactions.map { roomTransaction -> roomTransaction.toUiTransaction() }
+                }
         } catch (e: SQLiteConstraintException) {
             Log.d(TAG, "updateAccount threw SQLiteConstraintException.")
         } catch (e: Exception) {
@@ -105,6 +108,38 @@ class RoomLocalTransactionDataSource @Inject constructor(
         }
         return false
     }
+
+    override fun getTransactions(yearMonth: YearMonth): Flow<List<Transaction>> =
+        try {
+            val startDate: LocalDate = yearMonth.atDay(1)
+            val endDate: LocalDate = yearMonth.atEndOfMonth()
+            transactionDao.getTransactionsByLocalDateRange(startDate, endDate)
+                .map { transactionList ->
+                    transactionList.map { transaction -> transaction.toUiTransaction() }
+                }
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "getTransactions threw SQLiteConstraintException.")
+            throw e
+        } catch (e: Exception) {
+            Log.d(TAG, "Unknown error at getTransactions: ${e.stackTraceToString()}")
+            throw e
+        }
+
+    override fun getTransactions(budgetItemEntry: BudgetItemEntry): Flow<List<Transaction>> =
+        try {
+            val startDate: LocalDate = budgetItemEntry.yearMonth.atDay(1)
+            val endDate: LocalDate = budgetItemEntry.yearMonth.atEndOfMonth()
+            transactionDao.getTransactionsByLocalDateRangeAndBudgetItemId(startDate, endDate, budgetItemEntry.budgetItemId)
+                .map { transactionList ->
+                    transactionList.map { transaction -> transaction.toUiTransaction() }
+                }
+        } catch (e: SQLiteConstraintException) {
+            Log.d(TAG, "getTransactions threw SQLiteConstraintException.")
+            throw e
+        } catch (e: Exception) {
+            Log.d(TAG, "Unknown error at getTransactions: ${e.stackTraceToString()}")
+            throw e
+        }
 
     private fun com.ynab.data.dataSource.room.Transaction.toUiTransaction(): Transaction =
         Transaction(

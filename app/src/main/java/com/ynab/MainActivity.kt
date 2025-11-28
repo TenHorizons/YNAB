@@ -1,6 +1,7 @@
 package com.ynab
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.CurrencyExchange
+import androidx.compose.material.icons.filled.Savings
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -17,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -28,6 +31,7 @@ import androidx.navigation.toRoute
 import com.ynab.ui.accounts.Accounts
 import com.ynab.ui.addAccount.AddAccount
 import com.ynab.ui.addTransaction.AddTransaction
+import com.ynab.ui.budget.Budget
 import com.ynab.ui.login.Login
 import com.ynab.ui.register.Register
 import com.ynab.ui.settings.Settings
@@ -62,6 +66,7 @@ fun Main(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
 
     val topLevelRoutes = listOf(
+        TopLevelRoute("Budget", Budget, Icons.Default.Savings),
         TopLevelRoute("Add Transaction", AddTransaction, Icons.Default.CurrencyExchange),
         TopLevelRoute("Accounts", Accounts, Icons.Default.AccountBalance),
         TopLevelRoute("Settings", Settings, Icons.Default.Settings)
@@ -72,7 +77,7 @@ fun Main(modifier: Modifier = Modifier) {
             topLevelRoutes.forEach { topLevelRoute ->
                 NavigationBarItem(
                     icon = { Icon(topLevelRoute.icon, contentDescription = topLevelRoute.name) },
-                    label = { Text(topLevelRoute.name) },
+                    label = { Text(text = topLevelRoute.name, textAlign = TextAlign.Center) },
                     selected =
                     navController.currentBackStackEntry?.
                     destination?.hierarchy?.any {
@@ -167,6 +172,13 @@ fun Main(modifier: Modifier = Modifier) {
                 modifier = modifier,
                 transactionId = backStackEntry.toRoute<Transaction>().transactionId,
                 onBackPressed = { navController.popBackStack() }
+            )
+        }
+        composable<Budget> {
+            Budget(
+                modifier = modifier,
+                bottomNavBar = bottomNavBar,
+                onBudgetItemClicked = { Log.d(TAG,"Budget item $it clicked.") }
             )
         }
     }

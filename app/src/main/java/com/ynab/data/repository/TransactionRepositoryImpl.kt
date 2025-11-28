@@ -3,10 +3,12 @@ package com.ynab.data.repository
 import android.util.Log
 import com.ynab.TAG_PREFIX
 import com.ynab.data.dataSource.TransactionDataSource
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 import javax.inject.Inject
 
 private const val TAG = "${TAG_PREFIX}TransactionRepositoryImpl"
@@ -21,9 +23,9 @@ class TransactionRepositoryImpl @Inject constructor(
         budgetItemId: Int,
         date: LocalDate,
         memo: String
-    ): Boolean {
+    ): Boolean =
         try{
-            return transactionDs.addTransaction(
+            transactionDs.addTransaction(
                 amount = amount,
                 accountId = accountId,
                 budgetItemId = budgetItemId,
@@ -34,50 +36,60 @@ class TransactionRepositoryImpl @Inject constructor(
             Log.d(TAG, "An unknown error occurred at addTransaction: ${e.stackTrace}")
             throw e
         }
-    }
 
-    override fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>> {
+    override fun getTransactionsByAccountId(accountId: Int): Flow<List<Transaction>> =
         try{
-            return transactionDs.getTransactionsByAccountId(accountId)
+            transactionDs.getTransactionsByAccountId(accountId)
         }catch (e: Exception) {
             Log.d(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
             throw e
         }
-    }
 
-    override fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> {
+    override fun getTransactionsByAccountIdList(accountIdList: List<Int>): Flow<List<Transaction>> =
         try{
-            return transactionDs.getTransactionsByAccountIdList(accountIdList)
+            transactionDs.getTransactionsByAccountIdList(accountIdList)
         }catch (e: Exception) {
-            Log.d(TAG, "An unknown error occurred at getTransactionsByAccountId: ${e.stackTrace}")
+            Log.d(TAG, "An unknown error occurred at getTransactionsByAccountIdList: ${e.stackTrace}")
             throw e
         }
-    }
 
-    override fun getTransaction(transactionId: Int): Transaction? {
+    override fun getTransaction(transactionId: Int): Transaction? =
         try{
-            return transactionDs.getTransaction(transactionId)
+            transactionDs.getTransaction(transactionId)
         }catch (e: Exception) {
             Log.d(TAG, "An unknown error occurred at getTransaction: ${e.stackTrace}")
             throw e
         }
-    }
 
-    override fun updateTransaction(transaction: Transaction): Boolean {
+    override fun updateTransaction(transaction: Transaction): Boolean =
         try{
-            return transactionDs.updateTransaction(transaction)
+            transactionDs.updateTransaction(transaction)
         }catch (e: Exception) {
             Log.d(TAG, "An unknown error occurred at updateTransaction: ${e.stackTrace}")
             throw e
         }
-    }
 
-    override fun deleteTransaction(transactionId: Int): Boolean {
+    override fun deleteTransaction(transactionId: Int): Boolean =
         try{
-            return transactionDs.deleteTransaction(transactionId)
+            transactionDs.deleteTransaction(transactionId)
         }catch (e: Exception) {
             Log.d(TAG, "An unknown error occurred at deleteTransaction: ${e.stackTrace}")
             throw e
         }
-    }
+
+    override fun getTransactions(yearMonth: YearMonth): Flow<List<Transaction>> =
+        try{
+            transactionDs.getTransactions(yearMonth)
+        }catch (e: Exception) {
+            Log.d(TAG, "An unknown error occurred at getTransactions: ${e.stackTrace}")
+            throw e
+        }
+
+    override fun getTransactions(budgetItemEntry: BudgetItemEntry): Flow<List<Transaction>> =
+        try{
+            transactionDs.getTransactions(budgetItemEntry)
+        }catch (e: Exception) {
+            Log.d(TAG, "An unknown error occurred at getTransactions: ${e.stackTrace}")
+            throw e
+        }
 }

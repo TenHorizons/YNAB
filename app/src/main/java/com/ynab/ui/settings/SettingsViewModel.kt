@@ -15,11 +15,10 @@ class SettingsViewModel @Inject constructor(
 ): ViewModel() {
     fun deleteAccount(onDeleteComplete: () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
-            //delete user data before delete user (probably move this to work manager)
+            // Cascade delete: deletes user and all associated data (budgets, categories, items, entries, accounts, transactions)
             if(userRepository.deleteUser()) withContext(Dispatchers.Main) {
                 onDeleteComplete()
             }
         }
-
     }
 }

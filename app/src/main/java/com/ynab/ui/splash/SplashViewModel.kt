@@ -1,12 +1,10 @@
 package com.ynab.ui.splash
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ynab.TAG_PREFIX
 import com.ynab.domain.LoadAppUseCase
-import com.ynab.ui.register.RegisterState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,23 +32,19 @@ class SplashViewModel @Inject constructor(
         )
 
         viewModelScope.launch(context = Dispatchers.IO) {
-            val error =
-                if (isNewUser) loadAppUseCase.generateNewUserData()
-                else loadAppUseCase.loadUserData()
+            val success = loadAppUseCase.generateUserData(isNewUser)
 
             withContext(Dispatchers.Main) {
-                if (error == null) {
+                if (success) {
                     val end = System.currentTimeMillis()
                     Log.d(TAG, "load end: $end")
                     Log.d(TAG, "load time: ${end - start}")
                     onStartupComplete()
-                } else {
-                    val action = if (isNewUser) "generate" else "load"
+                } else
                     _uiState.value = uiState.value.copy(
                         showError = true,
-                        errorMessage = "failed to $action user data. Error: \n${error.message}"
+                        errorMessage = "Failed to generate new user data. See logs for error details."
                     )
-                }
             }
         }
     }

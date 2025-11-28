@@ -15,4 +15,5 @@ interface LocalUserDataSource {
     suspend fun addUser(username: String, password: String): Boolean
     suspend fun deleteUser(username: String): Boolean
     fun getUserLastBudgetId(username: String): Flow<Int>
+    suspend fun updateLastBudgetId(username: String, budgetId: Int): Boolean
 }

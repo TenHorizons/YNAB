@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.ynab.TAG_PREFIX
 import com.ynab.data.repository.AccountRepository
 import com.ynab.data.repository.TransactionRepository
+import com.ynab.ui.shared.UNASSIGNED_TRANSACTION
 import com.ynab.ui.shared.currencyStringToBigDecimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -89,7 +90,7 @@ class AddAccountViewModel @Inject constructor(
                     transactionRepository.addTransaction(
                         amount = initialBalance,
                         accountId = addedAccountId!!.toInt(),
-                        budgetItemId = 0,
+                        budgetItemId = UNASSIGNED_TRANSACTION,
                         date = LocalDate.now(),
                         memo = "Initial balance."
                     )

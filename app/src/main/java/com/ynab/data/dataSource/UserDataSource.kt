@@ -19,4 +19,6 @@ class UserDataSource @Inject constructor(
         localUserDataSource.deleteUser(username)
     fun getUserLastBudgetId(username: String): Flow<Int> =
         localUserDataSource.getUserLastBudgetId(username)
+    suspend fun updateLastBudgetId(username: String, budgetId: Int): Boolean =
+        localUserDataSource.updateLastBudgetId(username, budgetId)
 }

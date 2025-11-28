@@ -29,7 +29,7 @@ class AccountsViewModel @Inject constructor(
         accountList.map { account ->
             val balance =
                 transactionRepository.getTransactionsByAccountId(account.accountId).map { transactionList ->
-                    transactionList.map { it.amount }.reduce { acc, value -> acc.plus(value) }
+                    transactionList.sumOf { it.amount }
                 }
             DisplayedAccount(
                 accountId = account.accountId,

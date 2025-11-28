@@ -1,9 +1,11 @@
 package com.ynab.data.repository
 
+import com.ynab.data.repository.dataClass.BudgetItemEntry
 import com.ynab.data.repository.dataClass.Transaction
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.YearMonth
 
 interface TransactionRepository {
     fun addTransaction(
@@ -19,4 +21,6 @@ interface TransactionRepository {
     fun getTransaction(transactionId: Int): Transaction?
     fun updateTransaction(transaction: Transaction): Boolean
     fun deleteTransaction(transactionId: Int): Boolean
+    fun getTransactions(yearMonth: YearMonth): Flow<List<Transaction>>
+    fun getTransactions(budgetItemEntry: BudgetItemEntry): Flow<List<Transaction>>
 }

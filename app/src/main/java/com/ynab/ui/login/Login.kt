@@ -54,14 +54,15 @@ fun Login(
             Text(text = "Sign In", fontSize = 16.sp)
         }
 
-        if (uiState.isLoginInProgress) CircularProgressIndicator()
+        if (uiState.isLoginInProgress)
+            CircularProgressIndicator()
         else
-        TextButton(
-            onClick = { onRegisterClick() },
-            modifier = Modifier.fillMaxWidth().padding(16.dp,8.dp,16.dp,0.dp)
-        ) {
-            Text("New User? Click to Sign Up")
-        }
+            TextButton(
+                onClick = { onRegisterClick() },
+                modifier = Modifier.fillMaxWidth().padding(16.dp,8.dp,16.dp,0.dp)
+            ) {
+                Text("New User? Click to Sign Up")
+            }
         if (uiState.isLoginError) {
             Card(
                 colors = CardDefaults.cardColors(

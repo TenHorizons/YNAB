@@ -10,5 +10,6 @@ interface UserRepository: Repository {
     fun setSessionUsername(username: String): Boolean
     fun getSessionUsername(): String
     fun getUserLastBudgetId(): Flow<Int>
+    suspend fun updateLastBudgetId(budgetId: Int): Boolean
     suspend fun deleteUser(): Boolean
 }

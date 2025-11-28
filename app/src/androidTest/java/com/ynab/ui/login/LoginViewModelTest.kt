@@ -16,7 +16,7 @@ class LoginViewModelTest {
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
-    var basicAuthUseCase: BasicAuthUseCase = FakeBasicAuthUseCase()
+    private var basicAuthUseCase: BasicAuthUseCase = FakeBasicAuthUseCase()
 
     //https://stackoverflow.com/questions/63544502/hilt-viewmodel-injection-into-instrumentation-tests
     @BindValue val vm = LoginViewModel(basicAuthUseCase)

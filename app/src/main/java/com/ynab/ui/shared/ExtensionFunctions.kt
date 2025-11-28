@@ -30,3 +30,12 @@ fun BigDecimal.toCurrencyString(): String {
         else "RM"
     return prefix + this.abs().displayTwoDecimal().toString()
 }
+
+/**Multiply by 100 to remove decimals. e.g. 20.20 to 2020.
+ * abs() and setScale(0) so it doesn't result as -2020.00.
+ * This is for text field visual transformation.*/
+fun BigDecimal.toDisplayedString(): String =
+    this.abs()
+        .multiply(BigDecimal("100"))
+        .setScale(0)
+        .toPlainString()
